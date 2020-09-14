@@ -29,10 +29,12 @@ func init() {
 // NewModbusFromConfig creates api.Meter from config
 func NewModbusFromConfig(other map[string]interface{}) (api.Meter, error) {
 	cc := struct {
-		Model           string
+		Model           string `validate:"required"`
 		modbus.Settings `mapstructure:",squash"`
 		Power, Energy   string
-	}{}
+	}{
+		Power: "Power",
+	}
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
@@ -76,11 +78,6 @@ func NewModbusFromConfig(other map[string]interface{}) (api.Meter, error) {
 		log:    log,
 		conn:   conn,
 		device: device,
-	}
-
-	// power reading
-	if cc.Power == "" {
-		cc.Power = "Power"
 	}
 
 	if err := modbus.ParseOperation(device, cc.Power, &m.opPower); err != nil {
