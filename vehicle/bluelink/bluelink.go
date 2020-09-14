@@ -59,6 +59,7 @@ type API struct {
 	*util.HTTPHelper
 	user     string
 	password string
+	vin      string
 	pin      string
 	chargeG  func() (float64, error)
 	config   Config
@@ -86,7 +87,7 @@ type response struct {
 }
 
 // New creates a new BlueLink API
-func New(log *util.Logger, user, password, pin string, cache time.Duration, config Config) (*API, error) {
+func New(log *util.Logger, user, password, vin, pin string, cache time.Duration, config Config) (*API, error) {
 	if err := mergo.Merge(&config, defaults); err != nil {
 		return nil, err
 	}
@@ -96,6 +97,7 @@ func New(log *util.Logger, user, password, pin string, cache time.Duration, conf
 		config:     config,
 		user:       user,
 		password:   password,
+		vin:        vin,
 		pin:        pin,
 	}
 
@@ -249,7 +251,7 @@ func (v *API) getToken(accCode string) (string, error) {
 	return accToken, err
 }
 
-func (v *API) getVehicles(accToken, did string) (string, error) {
+func (v *API) getVehicles(accToken, did string) ([]string, error) {
 	headers := map[string]string{
 		"Authorization":       accToken,
 		"ccsp-device-id":      did,
@@ -258,19 +260,19 @@ func (v *API) getVehicles(accToken, did string) (string, error) {
 		"User-Agent":          "okhttp/3.10.0",
 	}
 
+	var vehicles []string
+
 	req, err := v.request(http.MethodGet, v.config.URI+v.config.Vehicles, headers, nil)
 	if err == nil {
 		var resp response
-		if _, err = v.RequestJSON(req, &resp); err == nil {
-			if len(resp.ResMsg.Vehicles) == 1 {
-				return resp.ResMsg.Vehicles[0].VehicleID, nil
-			}
+		_, err = v.RequestJSON(req, &resp)
 
-			err = errors.New("couldn't find vehicle")
+		for _, v := range resp.ResMsg.Vehicles {
+			vehicles = append(vehicles, v.VehicleID)
 		}
 	}
 
-	return "", err
+	return vehicles, err
 }
 
 func (v *API) preWakeup(accToken, did, vid string) error {
@@ -349,7 +351,7 @@ func (v *API) authFlow() (err error) {
 		accToken, err = v.getToken(accCode)
 	}
 
-	if err == nil {
+	if err == nil && v.vin == "" {
 		v.auth.vehicleID, err = v.getVehicles(accToken, v.auth.deviceID)
 	}
 
