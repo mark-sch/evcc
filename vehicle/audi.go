@@ -83,10 +83,11 @@ func init() {
 // NewAudiFromConfig creates a new vehicle
 func NewAudiFromConfig(other map[string]interface{}) (api.Vehicle, error) {
 	cc := struct {
-		Title               string
-		Capacity            int64
-		User, Password, VIN string
-		Cache               time.Duration
+		Title          string
+		Capacity       int64
+		User, Password string `validate:"required"`
+		VIN            string
+		Cache          time.Duration
 	}{}
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
