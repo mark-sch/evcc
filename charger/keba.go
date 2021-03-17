@@ -15,7 +15,7 @@ import (
 // https://www.keba.com/file/downloads/e-mobility/KeContact_P20_P30_UDP_ProgrGuide_en.pdf
 
 const (
-	udpTimeout = time.Second
+	udpTimeout = 3 * time.Second
 )
 
 // RFID contains access credentials
@@ -161,6 +161,8 @@ func (c *Keba) roundtrip(msg string, report int, res interface{}) error {
 func (c *Keba) Status() (api.ChargeStatus, error) {
 	var kr keba.Report2
 	err := c.roundtrip("report", 2, &kr)
+	time.Sleep(1 * time.Second)
+
 	if err != nil {
 		return api.StatusA, err
 	}
@@ -186,6 +188,8 @@ func (c *Keba) Status() (api.ChargeStatus, error) {
 func (c *Keba) Enabled() (bool, error) {
 	var kr keba.Report2
 	err := c.roundtrip("report", 2, &kr)
+	time.Sleep(1 * time.Second)
+
 	if err != nil {
 		return false, err
 	}
@@ -200,6 +204,8 @@ func (c *Keba) enableRFID() error {
 	if err := c.roundtrip("report", 2, &kr); err != nil {
 		return err
 	}
+	time.Sleep(1 * time.Second)
+
 	if kr.AuthReq == 0 {
 		return nil
 	}
@@ -219,6 +225,7 @@ func (c *Keba) Enable(enable bool) error {
 		if err := c.enableRFID(); err != nil {
 			return err
 		}
+		time.Sleep(1 * time.Second)
 	}
 
 	var d int
@@ -250,11 +257,12 @@ func (c *Keba) MaxCurrent(current int64) error {
 // MaxCurrentMillis implements the ChargerEx interface
 func (c *Keba) MaxCurrentMillis(current float64) error {
 	d := int(1000 * current)
-	c.log.INFO.Println("Keba: Set MaxCurrentMillis to %d", d)
 	var resp string
 	if err := c.roundtrip(fmt.Sprintf("curr %d", d), 0, &resp); err != nil {
 		return err
 	}
+	time.Sleep(1 * time.Second)
+
 	if resp != keba.OK {
 		return fmt.Errorf("curr %d unexpected response: %s", d, resp)
 	}
@@ -266,6 +274,7 @@ func (c *Keba) MaxCurrentMillis(current float64) error {
 func (c *Keba) CurrentPower() (float64, error) {
 	var kr keba.Report3
 	err := c.roundtrip("report", 3, &kr)
+	time.Sleep(1 * time.Second)
 
 	// mW to W
 	return float64(kr.P) / 1e3, err
@@ -275,6 +284,7 @@ func (c *Keba) CurrentPower() (float64, error) {
 func (c *Keba) TotalEnergy() (float64, error) {
 	var kr keba.Report3
 	err := c.roundtrip("report", 3, &kr)
+	time.Sleep(1 * time.Second)
 
 	// mW to W
 	return float64(kr.ETotal) / 1e4, err
@@ -284,6 +294,7 @@ func (c *Keba) TotalEnergy() (float64, error) {
 func (c *Keba) ChargedEnergy() (float64, error) {
 	var kr keba.Report3
 	err := c.roundtrip("report", 3, &kr)
+	time.Sleep(1 * time.Second)
 
 	// 0,1Wh to kWh
 	return float64(kr.EPres) / 1e4, err
@@ -293,6 +304,7 @@ func (c *Keba) ChargedEnergy() (float64, error) {
 func (c *Keba) Currents() (float64, float64, float64, error) {
 	var kr keba.Report3
 	err := c.roundtrip("report", 3, &kr)
+	time.Sleep(1 * time.Second)
 
 	// 1mA to A
 	return float64(kr.I1) / 1e3, float64(kr.I2) / 1e3, float64(kr.I3) / 1e3, err
