@@ -24,6 +24,7 @@ type API struct {
 // Actions and action values
 const (
 	ActionCharge         = "charging"
+	ActionStopCharge     = "stopcharging"
 	ActionChargeStart    = "start"
 	ActionChargeStop     = "stop"
 	ActionChargeSettings = "settings" // body: targetSOC_pct

@@ -6,13 +6,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bogosj/tesla"
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/provider"
 	"github.com/mark-sch/evcc/util"
 	"github.com/mark-sch/evcc/util/request"
-	"github.com/bogosj/tesla"
 	"golang.org/x/oauth2"
 )
+
+var teslaChargeStatus api.ChargeStatus = api.StatusA
+var lastLpChargeStatus api.ChargeStatus = api.StatusA
 
 // Tesla is an api.Vehicle implementation for Tesla cars
 type Tesla struct {
@@ -102,7 +105,16 @@ func NewTeslaFromConfig(other map[string]interface{}) (api.Vehicle, error) {
 
 // chargeState implements the charge state api
 func (v *Tesla) chargeState() (interface{}, error) {
-	return v.vehicle.ChargeState()
+	res, err := v.vehicle.ChargeState()
+
+	if err == nil {
+		return res, nil
+	} else {
+		if err.Error() == "408 Request Timeout" {
+			err = nil
+		}
+		return 0, err
+	}
 }
 
 // SoC implements the api.Vehicle interface
@@ -153,7 +165,29 @@ func (v *Tesla) Status() (api.ChargeStatus, error) {
 		}
 	}
 
-	return status, err
+	teslaChargeStatus = status
+	return teslaChargeStatus, err
+}
+
+// StatusExt implements the api.ChargeStateExt interface
+func (v *Tesla) StatusExt(lpCS api.ChargeStatus, lpMode api.ChargeMode, lpEnabled bool) (api.ChargeStatus, error) {
+	//query only when loadpoint ChargeStatus has changed
+	if lpCS != lastLpChargeStatus {
+		v.vehicle.Wakeup()
+		v.vehicle.StartCharging()
+		lastLpChargeStatus = lpCS
+		if res, err := v.vehicle.ChargeState(); err == nil {
+			if res.ChargingState == "Stopped" || res.ChargingState == "NoPower" || res.ChargingState == "Complete" {
+				teslaChargeStatus = api.StatusB
+			}
+			if res.ChargingState == "Charging" {
+				teslaChargeStatus = api.StatusC
+			}
+		}
+
+	}
+
+	return teslaChargeStatus, nil
 }
 
 // FinishTime implements the api.VehicleFinishTimer interface
@@ -166,4 +200,25 @@ func (v *Tesla) FinishTime() (time.Time, error) {
 	}
 
 	return time.Time{}, err
+}
+
+// StopCharge implements the api.StopCharge interface
+func (v *Tesla) StopCharge() error {
+	v.vehicle.StopCharging()
+	v.vehicle.OpenChargePort()
+
+	return nil
+}
+
+func (v *Tesla) LoadpointMode(mode api.ChargeMode, lpCS api.ChargeStatus) error {
+	if lpCS != teslaChargeStatus {
+		v.vehicle.Wakeup()
+	}
+
+	if mode != api.ModeOff && lpCS == api.StatusA {
+		v.vehicle.StartCharging()
+		v.vehicle.OpenChargePort()
+	}
+
+	return nil
 }

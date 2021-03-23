@@ -12,6 +12,7 @@ import (
 type Provider struct {
 	statusG           func() (interface{}, error)
 	startChargeAction func() error
+	stopChargeAction  func() error
 }
 
 // NewProvider creates a new vehicle
@@ -22,6 +23,9 @@ func NewProvider(api *API, vin string, cache time.Duration) *Provider {
 		}, cache).InterfaceGetter(),
 		startChargeAction: func() error {
 			return api.Action(vin, ActionCharge, ActionChargeStart)
+		},
+		stopChargeAction: func() error {
+			return api.Action(vin, ActionStopCharge, ActionChargeStop)
 		},
 	}
 	return impl

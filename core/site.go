@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/avast/retry-go"
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/push"
 	"github.com/mark-sch/evcc/util"
-	"github.com/avast/retry-go"
 )
 
 //go:generate mockgen -package mock -destination ../mock/mock_loadpoint.go github.com/mark-sch/evcc/core Updater
@@ -36,29 +36,29 @@ type Site struct {
 	ResidualPower float64      `mapstructure:"residualPower"` // PV meter only: household usage. Grid meter: household safety margin
 	Meters        MetersConfig // Meter references
 	PrioritySoC   float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
-	count 		  int
+	count         int
 
 	// meters
-	gridMeter    api.Meter // Grid usage meter
-	pvMeter      api.Meter // PV generation meter
-	batteryMeter api.Meter // Battery charging meter
+	gridMeter        api.Meter // Grid usage meter
+	pvMeter          api.Meter // PV generation meter
+	batteryMeter     api.Meter // Battery charging meter
 	consumptionMeter api.Meter // Household consumption meter
 
 	loadpoints []*LoadPoint // Loadpoints
 
 	// cached state
-	gridPower    float64 // Grid power
-	pvPower      float64 // PV power
-	batteryPower float64 // Battery charge power
+	gridPower        float64 // Grid power
+	pvPower          float64 // PV power
+	batteryPower     float64 // Battery charge power
 	consumptionPower float64 // Consumption power
 }
 
 // MetersConfig contains the loadpoint's meter configuration
 type MetersConfig struct {
-	GridMeterRef    string `mapstructure:"grid"`    // Grid usage meter reference
-	PVMeterRef      string `mapstructure:"pv"`      // PV generation meter reference
-	BatteryMeterRef string `mapstructure:"battery"` // Battery charging meter reference
-	ConsumptionMeterRef	    string `mapstructure:"consumption"` // Home consumption meter reference
+	GridMeterRef        string `mapstructure:"grid"`        // Grid usage meter reference
+	PVMeterRef          string `mapstructure:"pv"`          // PV generation meter reference
+	BatteryMeterRef     string `mapstructure:"battery"`     // Battery charging meter reference
+	ConsumptionMeterRef string `mapstructure:"consumption"` // Home consumption meter reference
 }
 
 // NewSiteFromConfig creates a new site
@@ -329,9 +329,9 @@ func (site *Site) update(lp Updater) {
 	if sitePower, err := site.sitePower(); err == nil && site.count >= 30 {
 		lp.Update(sitePower)
 		site.Health.Update()
-		site.count=0
+		site.count = 0
 	}
-	site.count+=1
+	site.count += 1
 }
 
 // Prepare attaches communication channels to site and loadpoints
@@ -357,7 +357,7 @@ func (site *Site) Prepare(uiChan chan<- util.Param, pushChan chan<- push.Event) 
 			}
 		}(id)
 
-		lp.Prepare(lpUIChan, lpPushChan, site.lpUpdateChan)
+		lp.Prepare(lpUIChan, lpPushChan, site.lpUpdateChan, site)
 	}
 }
 

@@ -2,7 +2,7 @@ package core
 
 import (
 	"time"
-	
+
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/core/wrapper"
 )
@@ -47,6 +47,17 @@ func (lp *LoadPoint) SetMode(mode api.ChargeMode) {
 	if lp.Mode != mode {
 		lp.Mode = mode
 		lp.publish("mode", mode)
+
+		if car, ok := lp.vehicle.(api.VehicleStopCharge); ok && mode == api.ModeOff {
+			if err := car.StopCharge(); err != nil {
+				lp.log.ERROR.Printf("vehicle stop charge: %v", err)
+			}
+		}
+
+		if car, ok := lp.vehicle.(api.ChangeLoadpointMode); ok && mode != api.ModeOff {
+			car.LoadpointMode(mode, lp.status)
+		}
+
 		lp.requestUpdate()
 	}
 }

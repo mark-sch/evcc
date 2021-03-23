@@ -4,14 +4,14 @@ import (
 	"testing"
 	"time"
 
+	evbus "github.com/asaskevich/EventBus"
+	"github.com/benbjohnson/clock"
+	"github.com/golang/mock/gomock"
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/core/soc"
 	"github.com/mark-sch/evcc/mock"
 	"github.com/mark-sch/evcc/push"
 	"github.com/mark-sch/evcc/util"
-	evbus "github.com/asaskevich/EventBus"
-	"github.com/benbjohnson/clock"
-	"github.com/golang/mock/gomock"
 )
 
 const (
@@ -65,7 +65,7 @@ func attachListeners(t *testing.T, lp *LoadPoint) {
 		charger.EXPECT().MaxCurrent(lp.MinCurrent).Return(nil)
 	}
 
-	lp.Prepare(uiChan, pushChan, lpChan)
+	lp.Prepare(uiChan, pushChan, lpChan, nil)
 }
 
 func TestNew(t *testing.T) {

@@ -71,12 +71,13 @@ type LoadPoint struct {
 	uiChan   chan<- util.Param // client push messages
 	lpChan   chan<- *LoadPoint // update requests
 	log      *util.Logger
+	site     *Site
 
 	// exposed public configuration
 	sync.Mutex                // guard status
 	Mode       api.ChargeMode `mapstructure:"mode"` // Charge mode, guarded by mutex
 
-	ForeignEV	bool	// Status to determine if a non configured car is connected
+	ForeignEV   bool     // Status to determine if a non configured car is connected
 	Title       string   `mapstructure:"title"`    // UI title
 	Phases      int64    `mapstructure:"phases"`   // Phases- required for converting power and current
 	ChargerRef  string   `mapstructure:"charger"`  // Charger reference
@@ -227,6 +228,7 @@ func NewLoadPoint(log *util.Logger) *LoadPoint {
 
 // requestUpdate requests site to update this loadpoint
 func (lp *LoadPoint) requestUpdate() {
+	lp.site.count = 30
 	select {
 	case lp.lpChan <- lp: // request loadpoint update
 	default:
@@ -392,10 +394,11 @@ func (lp *LoadPoint) Name() string {
 }
 
 // Prepare loadpoint configuration by adding missing helper elements
-func (lp *LoadPoint) Prepare(uiChan chan<- util.Param, pushChan chan<- push.Event, lpChan chan<- *LoadPoint) {
+func (lp *LoadPoint) Prepare(uiChan chan<- util.Param, pushChan chan<- push.Event, lpChan chan<- *LoadPoint, site *Site) {
 	lp.uiChan = uiChan
 	lp.pushChan = pushChan
 	lp.lpChan = lpChan
+	lp.site = site
 
 	// event handlers
 	_ = lp.bus.Subscribe(evChargeStart, lp.evChargeStartHandler)
@@ -474,7 +477,7 @@ func (lp *LoadPoint) setLimit(chargeCurrent float64, force bool) (err error) {
 	if chargeCurrent < float64(lp.MinCurrent) {
 		lp.chargeCurrent = float64(0)
 		lp.bus.Publish(evChargeCurrent, lp.chargeCurrent)
-	}	
+	}
 
 	// set enabled
 	if enabled := chargeCurrent >= float64(lp.MinCurrent); enabled != lp.enabled && err == nil {
@@ -578,13 +581,13 @@ func (lp *LoadPoint) setActiveVehicle(vehicle api.Vehicle) {
 	lp.vehicle = vehicle
 	lp.socEstimator = soc.NewEstimator(lp.log, vehicle, lp.SoC.Estimate)
 
-	lp.publish("socTitle", lp.vehicle.Title())
-	lp.publish("socCapacity", lp.vehicle.Capacity())
+	lp.publish("socTitle", vehicle.Title())
+	lp.publish("socCapacity", vehicle.Capacity())
 	//if vs, err := lp.vehicle.SoC(); err == nil {
 	//	lp.publish("socCharge", vs)
 	//}
 	//lp.publish("range", lp.vehicle.rng())
-	
+
 }
 
 // findActiveVehicle validates if the active vehicle is still connected to the loadpoint
@@ -594,8 +597,17 @@ func (lp *LoadPoint) findActiveVehicle() {
 	}
 	found := false
 
-	if vs, ok := lp.vehicle.(api.ChargeState); ok {
-		status, err := vs.Status()
+	cs, csok := lp.vehicle.(api.ChargeState)
+	csext, csextok := lp.vehicle.(api.ChargeStateExt)
+
+	if csok || csextok {
+		var status api.ChargeStatus
+		var err error
+		if csextok {
+			status, err = csext.StatusExt(lp.status, lp.Mode, lp.enabled)
+		} else if csok {
+			status, err = cs.Status()
+		}
 
 		if err == nil {
 			lp.log.DEBUG.Printf("vehicle status: %s (%s / %dkWh)", status, lp.vehicle.Title(), lp.vehicle.Capacity())
@@ -615,8 +627,17 @@ func (lp *LoadPoint) findActiveVehicle() {
 					continue
 				}
 
-				if vs, ok := vehicle.(api.ChargeState); ok {
-					status, err := vs.Status()
+				cs, csok := vehicle.(api.ChargeState)
+				csext, csextok := vehicle.(api.ChargeStateExt)
+
+				if csok || csextok {
+					var status api.ChargeStatus
+					var err error
+					if csextok {
+						status, err = csext.StatusExt(lp.status, lp.Mode, lp.enabled)
+					} else if csok {
+						status, err = cs.Status()
+					}
 
 					if err == nil {
 						lp.log.DEBUG.Printf("vehicle status: %s (%s / %dkWh)", status, vehicle.Title(), vehicle.Capacity())
@@ -624,9 +645,11 @@ func (lp *LoadPoint) findActiveVehicle() {
 						// vehicle is plugged or charging, so it should be the right one
 						if status == api.StatusB || status == api.StatusC {
 							lp.setActiveVehicle(vehicle)
-							if lp.OnDisconnect.Mode != "" && lp.GetMode() == api.ModeOff { lp.SetMode(lp.OnDisconnect.Mode) }
-							lp.publish("socTitle", lp.vehicle.Title())
-							lp.publish("socCapacity", lp.vehicle.Capacity())
+							if lp.OnDisconnect.Mode != "" && lp.GetMode() == api.ModeOff {
+								lp.SetMode(lp.OnDisconnect.Mode)
+							}
+							lp.publish("socTitle", vehicle.Title())
+							lp.publish("socCapacity", vehicle.Capacity())
 							found = true
 							lp.ForeignEV = false
 							return

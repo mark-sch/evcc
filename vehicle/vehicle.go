@@ -77,7 +77,7 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 
 	// decorate vehicle with Status
 	var status func() (api.ChargeStatus, error)
-	
+
 	if cc.Status != nil {
 		v.statusG, err = provider.NewStringGetterFromConfig(*cc.Status)
 		if err != nil {

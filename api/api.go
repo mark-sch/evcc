@@ -1,6 +1,8 @@
 package api
 
-import "time"
+import (
+	"time"
+)
 
 //go:generate mockgen -package mock -destination ../mock/mock_api.go github.com/mark-sch/evcc/api Charger,Meter,MeterEnergy,Vehicle,ChargeRater
 
@@ -64,6 +66,11 @@ type ChargeState interface {
 	Status() (ChargeStatus, error)
 }
 
+// ChargeState provides current charging status and gives the vehicle some lp info to optimize vehicle requests
+type ChargeStateExt interface {
+	StatusExt(ChargeStatus, ChargeMode, bool) (ChargeStatus, error)
+}
+
 // Charger is able to provide current charging status and to enable/disabler charging
 type Charger interface {
 	ChargeState
@@ -117,4 +124,14 @@ type VehicleClimater interface {
 // VehicleStartCharge starts the charging session on the vehicle side
 type VehicleStartCharge interface {
 	StartCharge() error
+}
+
+// VehicleStopCharge stops the charging session on the vehicle side (e.g. release charge port)
+type VehicleStopCharge interface {
+	StopCharge() error
+}
+
+// VehicleStopCharge stops the charging session on the vehicle side (e.g. release charge port)
+type ChangeLoadpointMode interface {
+	LoadpointMode(ChargeMode, ChargeStatus) error
 }
