@@ -15,7 +15,7 @@ import (
 )
 
 var teslaChargeStatus api.ChargeStatus = api.StatusA
-var lastLpChargeStatus api.ChargeStatus = api.StatusA
+var lastLpChargeStatus api.ChargeStatus = api.StatusNone
 
 // Tesla is an api.Vehicle implementation for Tesla cars
 type Tesla struct {
@@ -173,8 +173,6 @@ func (v *Tesla) Status() (api.ChargeStatus, error) {
 func (v *Tesla) StatusExt(lpCS api.ChargeStatus, lpMode api.ChargeMode, lpEnabled bool) (api.ChargeStatus, error) {
 	//query only when loadpoint ChargeStatus has changed
 	if lpCS != lastLpChargeStatus {
-		v.vehicle.Wakeup()
-		v.vehicle.StartCharging()
 		lastLpChargeStatus = lpCS
 		if res, err := v.vehicle.ChargeState(); err == nil {
 			if res.ChargingState == "Stopped" || res.ChargingState == "NoPower" || res.ChargingState == "Complete" {
@@ -204,7 +202,6 @@ func (v *Tesla) FinishTime() (time.Time, error) {
 
 // StopCharge implements the api.StopCharge interface
 func (v *Tesla) StopCharge() error {
-	v.vehicle.StopCharging()
 	v.vehicle.OpenChargePort()
 
 	return nil
@@ -216,7 +213,6 @@ func (v *Tesla) LoadpointMode(mode api.ChargeMode, lpCS api.ChargeStatus) error 
 	}
 
 	if mode != api.ModeOff && lpCS == api.StatusA {
-		v.vehicle.StartCharging()
 		v.vehicle.OpenChargePort()
 	}
 
