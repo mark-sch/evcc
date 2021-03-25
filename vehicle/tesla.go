@@ -113,7 +113,7 @@ func (v *Tesla) chargeState() (interface{}, error) {
 		if err.Error() == "408 Request Timeout" {
 			err = nil
 		}
-		return 0, err
+		return -1, err
 	}
 }
 
@@ -125,7 +125,7 @@ func (v *Tesla) SoC() (float64, error) {
 		return float64(res.BatteryLevel), nil
 	}
 
-	return 0, err
+	return -1, err
 }
 
 // ChargedEnergy implements the api.ChargeRater interface
@@ -148,7 +148,7 @@ func (v *Tesla) Range() (int64, error) {
 		return int64(1.609344 * res.EstBatteryRange), nil
 	}
 
-	return 0, err
+	return -1, err
 }
 
 // Status implements the api.ChargeState interface
@@ -182,7 +182,6 @@ func (v *Tesla) StatusExt(lpCS api.ChargeStatus, lpMode api.ChargeMode, lpEnable
 				teslaChargeStatus = api.StatusC
 			}
 		}
-
 	}
 
 	return teslaChargeStatus, nil
