@@ -77,12 +77,14 @@ type LoadPoint struct {
 	sync.Mutex                // guard status
 	Mode       api.ChargeMode `mapstructure:"mode"` // Charge mode, guarded by mutex
 
-	ForeignEV   bool     // Status to determine if a non configured car is connected
-	Title       string   `mapstructure:"title"`    // UI title
-	Phases      int64    `mapstructure:"phases"`   // Phases- required for converting power and current
-	ChargerRef  string   `mapstructure:"charger"`  // Charger reference
-	VehicleRef  string   `mapstructure:"vehicle"`  // Vehicle reference
-	VehiclesRef []string `mapstructure:"vehicles"` // Vehicles reference
+	ForeignEV   bool          // Status to determine if a non configured car is connected
+	NextPVCheck bool          // Determine next, delayed charger adjustment for pv mode
+	Title       string        `mapstructure:"title"`      // UI title
+	Phases      int64         `mapstructure:"phases"`     // Phases- required for converting power and current
+	IntervalPV  time.Duration `mapstructure:"intervalPV"` // interval when not charging
+	ChargerRef  string        `mapstructure:"charger"`    // Charger reference
+	VehicleRef  string        `mapstructure:"vehicle"`    // Vehicle reference
+	VehiclesRef []string      `mapstructure:"vehicles"`   // Vehicles reference
 	Meters      struct {
 		ChargeMeterRef string `mapstructure:"charge"` // Charge meter reference
 	}
@@ -97,10 +99,11 @@ type LoadPoint struct {
 	MaxCurrent    int64         // Max allowed current. Physically ensured by the charger
 	GuardDuration time.Duration // charger enable/disable minimum holding time
 
-	enabled       bool      // Charger enabled state
-	chargeCurrent float64   // Charger current limit
-	guardUpdated  time.Time // Charger enabled/disabled timestamp
-	socUpdated    time.Time // SoC updated timestamp (poll: connected)
+	enabled              bool      // Charger enabled state
+	chargeCurrent        float64   // Charger current limit
+	chargeCurrentUpdated time.Time //time when charger current was changed
+	guardUpdated         time.Time // Charger enabled/disabled timestamp
+	socUpdated           time.Time // SoC updated timestamp (poll: connected)
 
 	charger     api.Charger
 	chargeTimer api.ChargeTimer
@@ -202,6 +205,7 @@ func NewLoadPointFromConfig(log *util.Logger, cp configProvider, other map[strin
 	if lp.Enable.Threshold > lp.Disable.Threshold {
 		log.WARN.Printf("PV mode enable threshold (%.0fW) is larger than disable threshold (%.0fW)", lp.Enable.Threshold, lp.Disable.Threshold)
 	}
+	lp.runNextPVTicker()
 
 	return lp, nil
 }
@@ -221,14 +225,31 @@ func NewLoadPoint(log *util.Logger) *LoadPoint {
 		MinCurrent:    6,  // A
 		MaxCurrent:    16, // A
 		GuardDuration: 5 * time.Minute,
+		NextPVCheck:   false,
 	}
 
 	return lp
 }
 
+func (lp *LoadPoint) runNextPVTicker() {
+	ticker := time.NewTicker(lp.IntervalPV)
+	done := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				lp.NextPVCheck = true
+			}
+		}
+	}()
+}
+
 // requestUpdate requests site to update this loadpoint
 func (lp *LoadPoint) requestUpdate() {
-	lp.site.count = 30
+	//lp.site.count = 15
 	select {
 	case lp.lpChan <- lp: // request loadpoint update
 	default:
@@ -328,6 +349,16 @@ func (lp *LoadPoint) evVehicleConnectHandler() {
 	lp.publish("socCharge", -1)
 	lp.publish("range", -1)
 	lp.ForeignEV = true
+
+	//reset SoC cache once upon connect to get new vehicle SoC update quickly
+	if len(lp.vehicles) > 0 {
+		for _, vehicle := range lp.vehicles {
+			cr, ok := vehicle.(api.VehicleCacheReset)
+			if ok {
+				cr.CacheReset()
+			}
+		}
+	}
 
 	lp.triggerEvent(evVehicleConnect)
 }
@@ -457,6 +488,14 @@ func (lp *LoadPoint) syncCharger() {
 }
 
 func (lp *LoadPoint) setLimit(chargeCurrent float64, force bool) (err error) {
+	// limit charge current accross all loadpoints
+	wantedCurrent := chargeCurrent
+	chargeCurrent = lp.site.limitChargeCurrent(wantedCurrent, lp)
+	if chargeCurrent != lp.chargeCurrent && wantedCurrent > chargeCurrent {
+		lp.log.DEBUG.Printf("requested charge current %.2gA was limited to %.2gA (site maxCurrent: %.2gA)", wantedCurrent, chargeCurrent, lp.site.MaxCurrent)
+		lp.site.requestCurrentJudgement(lp)
+		chargeCurrent = lp.site.limitChargeCurrent(wantedCurrent, lp)
+	}
 	// set current
 	if chargeCurrent != lp.chargeCurrent && chargeCurrent >= float64(lp.MinCurrent) {
 		if charger, ok := lp.charger.(api.ChargerEx); ok {
@@ -469,6 +508,7 @@ func (lp *LoadPoint) setLimit(chargeCurrent float64, force bool) (err error) {
 
 		if err == nil {
 			lp.chargeCurrent = chargeCurrent
+			lp.chargeCurrentUpdated = lp.clock.Now()
 			lp.bus.Publish(evChargeCurrent, chargeCurrent)
 		} else {
 			lp.log.ERROR.Printf("max charge current %.2g: %v", chargeCurrent, err)
@@ -532,6 +572,7 @@ func (lp *LoadPoint) minSocNotReached() bool {
 	return lp.vehicle != nil &&
 		lp.SoC.Min > 0 &&
 		lp.socCharge != 0 &&
+		lp.socCharge != -1 &&
 		lp.socCharge < float64(lp.SoC.Min)
 }
 
@@ -583,16 +624,11 @@ func (lp *LoadPoint) setActiveVehicle(vehicle api.Vehicle) {
 
 	lp.publish("socTitle", vehicle.Title())
 	lp.publish("socCapacity", vehicle.Capacity())
-	//if vs, err := lp.vehicle.SoC(); err == nil {
-	//	lp.publish("socCharge", vs)
-	//}
-	//lp.publish("range", lp.vehicle.rng())
-
 }
 
 // findActiveVehicle validates if the active vehicle is still connected to the loadpoint
 func (lp *LoadPoint) findActiveVehicle() {
-	if len(lp.vehicles) <= 1 {
+	if len(lp.vehicles) <= 1 && lp.ForeignEV == false {
 		return
 	}
 	found := false
@@ -618,6 +654,7 @@ func (lp *LoadPoint) findActiveVehicle() {
 					lp.publish("socTitle", lp.vehicle.Title())
 					lp.publish("socCapacity", lp.vehicle.Capacity())
 					lp.ForeignEV = false
+					lp.publishSoCAndRange(true)
 				}
 				return
 			}
@@ -670,13 +707,15 @@ func (lp *LoadPoint) findActiveVehicle() {
 }
 
 // updateChargerStatus updates charger status and detects car connected/disconnected events
-func (lp *LoadPoint) updateChargerStatus() error {
+func (lp *LoadPoint) updateChargerStatus(bolLog bool) error {
 	status, err := lp.charger.Status()
 	if err != nil {
 		return err
 	}
 
-	lp.log.DEBUG.Printf("charger status: %s", status)
+	if bolLog {
+		lp.log.DEBUG.Printf("charger status: %s", status)
+	}
 
 	if prevStatus := lp.status; status != prevStatus {
 		lp.status = status
@@ -833,7 +872,7 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 }
 
 // updateChargeMeter updates and publishes single meter
-func (lp *LoadPoint) updateChargeMeter() {
+func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 	err := retry.Do(func() error {
 		value, err := lp.chargeMeter.CurrentPower()
 		if err != nil {
@@ -841,7 +880,9 @@ func (lp *LoadPoint) updateChargeMeter() {
 		}
 
 		lp.chargePower = value // update value if no error
-		lp.log.DEBUG.Printf("charge power: %.0fW", value)
+		if bolLog {
+			lp.log.DEBUG.Printf("charge power: %.0fW", value)
+		}
 		lp.publish("chargePower", value)
 
 		return nil
@@ -891,15 +932,18 @@ func (lp *LoadPoint) socPollAllowed() bool {
 }
 
 // publish state of charge, remaining charge duration and range
-func (lp *LoadPoint) publishSoCAndRange() {
+func (lp *LoadPoint) publishSoCAndRange(force bool) {
 	if lp.socEstimator == nil || lp.ForeignEV == true {
 		return
 	}
 
-	if lp.socPollAllowed() {
+	if lp.socPollAllowed() || force {
 		f, err := lp.socEstimator.SoC(lp.chargedEnergy)
 		if err == nil {
 			lp.socCharge = math.Trunc(f)
+			if lp.socCharge == 0 {
+				lp.socCharge = -1
+			}
 			lp.log.DEBUG.Printf("vehicle soc: %.0f%%", lp.socCharge)
 			lp.publish("socCharge", lp.socCharge)
 
@@ -945,7 +989,7 @@ func (lp *LoadPoint) Update(sitePower float64) {
 	lp.publish("mode", mode)
 
 	// read and publish meters first
-	lp.updateChargeMeter()
+	lp.updateChargeMeter(true)
 
 	// update ChargeRater here to make sure initial meter update is caught
 	lp.bus.Publish(evChargeCurrent, lp.chargeCurrent)
@@ -955,7 +999,7 @@ func (lp *LoadPoint) Update(sitePower float64) {
 	lp.publishChargeProgress()
 
 	// read and publish status
-	if err := lp.updateChargerStatus(); err != nil {
+	if err := lp.updateChargerStatus(true); err != nil {
 		lp.log.ERROR.Printf("charger error: %v", err)
 		return
 	}
@@ -968,7 +1012,7 @@ func (lp *LoadPoint) Update(sitePower float64) {
 	// must be run after updating charger status to make sure
 	// initial update of connected state matches charger status
 	lp.findActiveVehicle()
-	lp.publishSoCAndRange()
+	lp.publishSoCAndRange(false)
 
 	// sync settings with charger
 	lp.syncCharger()
@@ -1020,23 +1064,27 @@ func (lp *LoadPoint) Update(sitePower float64) {
 		err = lp.setLimit(targetCurrent, false)
 
 	case mode == api.ModeMinPV || mode == api.ModePV:
-		targetCurrent := lp.pvMaxCurrent(mode, sitePower)
-		lp.log.DEBUG.Printf("pv max charge current: %.2gA", targetCurrent)
+		if lp.NextPVCheck {
+			lp.NextPVCheck = false
 
-		var required bool // false
-		if targetCurrent == 0 && lp.climateActive() {
-			targetCurrent = float64(lp.MinCurrent)
-			required = true
+			targetCurrent := lp.pvMaxCurrent(mode, sitePower)
+			lp.log.DEBUG.Printf("pv max charge current: %.2gA", targetCurrent)
+
+			var required bool // false
+			if targetCurrent == 0 && lp.climateActive() {
+				targetCurrent = float64(lp.MinCurrent)
+				required = true
+			}
+
+			// Sunny Home Manager
+			if lp.remoteControlled(RemoteSoftDisable) {
+				remoteDisabled = RemoteSoftDisable
+				targetCurrent = 0
+				required = true
+			}
+
+			err = lp.setLimit(targetCurrent, required)
 		}
-
-		// Sunny Home Manager
-		if lp.remoteControlled(RemoteSoftDisable) {
-			remoteDisabled = RemoteSoftDisable
-			targetCurrent = 0
-			required = true
-		}
-
-		err = lp.setLimit(targetCurrent, required)
 	}
 
 	// effective disabled status

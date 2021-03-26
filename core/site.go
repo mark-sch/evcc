@@ -34,6 +34,7 @@ type Site struct {
 	Title         string       `mapstructure:"title"`         // UI title
 	Voltage       float64      `mapstructure:"voltage"`       // Operating voltage. 230V for Germany.
 	ResidualPower float64      `mapstructure:"residualPower"` // PV meter only: household usage. Grid meter: household safety margin
+	MaxCurrent    float64      `mapstructure:"maxcurrent"`    // MaxCurrent limit accross all loadpoints
 	Meters        MetersConfig // Meter references
 	PrioritySoC   float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
 	count         int
@@ -148,6 +149,7 @@ func (site *Site) DumpConfig() {
 
 	site.publish("prioritySoC", math.Trunc(site.PrioritySoC))
 	site.publish("residualPower", math.Trunc(site.ResidualPower))
+	site.publish("maxCurrent", math.Trunc(site.MaxCurrent))
 
 	site.publish("gridConfigured", site.gridMeter != nil)
 	if site.gridMeter != nil {
@@ -323,15 +325,48 @@ func (site *Site) sitePower() (float64, error) {
 	return sitePower, nil
 }
 
-func (site *Site) update(lp Updater) {
+func (site *Site) update(lp Updater, sitePower float64) {
 	site.log.DEBUG.Println("----")
 
-	if sitePower, err := site.sitePower(); err == nil && site.count >= 30 {
-		lp.Update(sitePower)
-		site.Health.Update()
-		site.count = 0
+	//if sitePower, err := site.sitePower(); err == nil {
+	lp.Update(sitePower)
+	site.Health.Update()
+	//}
+}
+
+func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
+	//determine if any loadpoint is requesting more current than actually using
+	for id, slp := range site.loadpoints {
+		_ = id
+		if slp.chargeCurrent > float64(slp.MinCurrent) && lp.clock.Since(slp.chargeCurrentUpdated) > 15*time.Second {
+			if curr, err := slp.chargeMeter.CurrentPower(); err == nil && curr+1 < slp.chargeCurrent {
+				var newCurrent float64
+				if curr+1 < float64(slp.MinCurrent) {
+					newCurrent = float64(slp.MinCurrent)
+				} else {
+					newCurrent = curr + 1
+				}
+
+				slp.setLimit(newCurrent, false)
+				site.log.INFO.Printf("current judgement: pwm was set to %.2gA, using %.2gA, now limiting to %.2gA", slp.chargeCurrent, curr, newCurrent)
+			}
+		}
 	}
-	site.count += 1
+}
+
+func (site *Site) limitChargeCurrent(chargeCurrent float64, lp *LoadPoint) float64 {
+	var siteChargeCurrentLimit float64 = site.MaxCurrent
+	var siteChargeCurrent float64 = 0
+	for id, slp := range site.loadpoints {
+		_ = id
+		siteChargeCurrent += slp.chargeCurrent
+	}
+	remainingChargeCurrent := siteChargeCurrentLimit - siteChargeCurrent + lp.chargeCurrent
+	if chargeCurrent <= remainingChargeCurrent {
+		return chargeCurrent
+	} else {
+		return remainingChargeCurrent
+	}
 }
 
 // Prepare attaches communication channels to site and loadpoints
@@ -377,14 +412,25 @@ func (site *Site) Run(stopC chan struct{}, interval time.Duration) {
 	go site.loopLoadpoints(loadpointChan)
 
 	ticker := time.NewTicker(interval)
-	site.update(<-loadpointChan) // start immediately
+	if sitePower, err := site.sitePower(); err == nil {
+		site.update(<-loadpointChan, sitePower) // start immediately
+	}
 
 	for {
 		select {
 		case <-ticker.C:
-			site.update(<-loadpointChan)
+			if sitePower, err := site.sitePower(); err == nil {
+				if site.count >= 2 {
+					site.update(<-loadpointChan, sitePower)
+					site.count = 0
+				} else {
+					site.count += 1
+				}
+			}
 		case lp := <-site.lpUpdateChan:
-			site.update(lp)
+			if sitePower, err := site.sitePower(); err == nil {
+				site.update(lp, sitePower)
+			}
 		case <-stopC:
 			return
 		}
