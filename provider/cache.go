@@ -3,8 +3,8 @@ package provider
 import (
 	"time"
 
-	"github.com/mark-sch/evcc/util"
 	"github.com/benbjohnson/clock"
+	"github.com/mark-sch/evcc/util"
 )
 
 // Cached wraps a getter with a cache
@@ -145,4 +145,9 @@ func (c *Cached) InterfaceGetter() func() (interface{}, error) {
 
 		return c.val, c.err
 	}
+}
+
+func (c *Cached) CacheReset() func() error {
+	c.updated = time.Now().Add(-24 * time.Hour)
+	return nil
 }

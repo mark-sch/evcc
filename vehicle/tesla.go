@@ -16,6 +16,7 @@ import (
 
 var teslaChargeStatus api.ChargeStatus = api.StatusA
 var lastLpChargeStatus api.ChargeStatus = api.StatusNone
+var retryCount int64 = 0
 
 // Tesla is an api.Vehicle implementation for Tesla cars
 type Tesla struct {
@@ -113,19 +114,24 @@ func (v *Tesla) chargeState() (interface{}, error) {
 		if err.Error() == "408 Request Timeout" {
 			err = nil
 		}
-		return -1, err
+		return 0, err
 	}
+}
+
+func (v *Tesla) CacheReset() error {
+	res, err := v.chargeStateG()
+	res.(*provider.Cached).CacheReset()
+	return err
 }
 
 // SoC implements the api.Vehicle interface
 func (v *Tesla) SoC() (float64, error) {
 	res, err := v.chargeStateG()
-
 	if res, ok := res.(*tesla.ChargeState); err == nil && ok {
 		return float64(res.BatteryLevel), nil
 	}
 
-	return -1, err
+	return 0, err
 }
 
 // ChargedEnergy implements the api.ChargeRater interface
@@ -148,7 +154,7 @@ func (v *Tesla) Range() (int64, error) {
 		return int64(1.609344 * res.EstBatteryRange), nil
 	}
 
-	return -1, err
+	return 0, err
 }
 
 // Status implements the api.ChargeState interface
@@ -173,8 +179,25 @@ func (v *Tesla) Status() (api.ChargeStatus, error) {
 func (v *Tesla) StatusExt(lpCS api.ChargeStatus, lpMode api.ChargeMode, lpEnabled bool) (api.ChargeStatus, error) {
 	//query only when loadpoint ChargeStatus has changed
 	if lpCS != lastLpChargeStatus {
+		retryCount = 0
+	}
+	if lpCS != lastLpChargeStatus || (retryCount < 10 && lpCS != teslaChargeStatus) {
 		lastLpChargeStatus = lpCS
+		retryCount += 1
 		if res, err := v.vehicle.ChargeState(); err == nil {
+			if res.ChargingState == "Stopped" || res.ChargingState == "NoPower" || res.ChargingState == "Complete" {
+				teslaChargeStatus = api.StatusB
+			}
+			if res.ChargingState == "Charging" {
+				teslaChargeStatus = api.StatusC
+			}
+		}
+	}
+
+	if lpCS == api.StatusC {
+		res, err := v.chargeStateG()
+
+		if res, ok := res.(*tesla.ChargeState); err == nil && ok {
 			if res.ChargingState == "Stopped" || res.ChargingState == "NoPower" || res.ChargingState == "Complete" {
 				teslaChargeStatus = api.StatusB
 			}

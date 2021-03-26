@@ -18,14 +18,12 @@ type SiteAPI interface {
 	SetMinSoC(int) error
 }
 
-
 // GetPrioritySoC returns the PrioritySoC
 func (site *Site) GetPrioritySoC() float64 {
 	site.Lock()
 	defer site.Unlock()
 	return site.PrioritySoC
 }
-
 
 // SetPrioritySoC sets the PrioritySoC
 func (site *Site) SetPrioritySoC(soc float64) error {
@@ -37,7 +35,7 @@ func (site *Site) SetPrioritySoC(soc float64) error {
 	}
 
 	//force immediate reaction to mode change
-	site.count = 30;
+	site.count = 15
 
 	site.log.INFO.Println("set global priority soc:", soc)
 	site.PrioritySoC = soc
@@ -46,7 +44,6 @@ func (site *Site) SetPrioritySoC(soc float64) error {
 	return nil
 }
 
-
 // GetResidualPower
 func (site *Site) GetResidualPower() float64 {
 	site.Lock()
@@ -54,19 +51,17 @@ func (site *Site) GetResidualPower() float64 {
 	return site.ResidualPower
 }
 
-
 // SetResidualPower
 func (site *Site) SetResidualPower(power float64) error {
 	site.Lock()
 	defer site.Unlock()
-	
+
 	site.log.INFO.Println("set residual power:", power)
 	site.ResidualPower = power
 	site.publish("residualPower", power)
 
 	return nil
 }
-
 
 // GetMinSoC gets loadpoint charge minimum soc
 func (site *Site) GetMinSoC() int {

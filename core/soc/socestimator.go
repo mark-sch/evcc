@@ -14,9 +14,10 @@ const chargeEfficiency = 0.9 // assume charge 90% efficiency
 // Estimator provides vehicle soc and charge duration
 // Vehicle SoC can be estimated to provide more granularity
 type Estimator struct {
-	log      *util.Logger
-	vehicle  api.Vehicle
-	estimate bool
+	log        *util.Logger
+	vehicle    api.Vehicle
+	cachereset api.VehicleCacheReset
+	estimate   bool
 
 	capacity          float64 // vehicle capacity in Wh cached to simplify testing
 	virtualCapacity   float64 // estimated virtual vehicle capacity in Wh
@@ -87,6 +88,11 @@ func (s *Estimator) RemainingChargeEnergy(targetSoC int) float64 {
 	// estimate remaining energy
 	whRemaining := percentRemaining / 100 * s.virtualCapacity
 	return whRemaining / 1e3
+}
+
+func (s *Estimator) CacheReset() error {
+	err := s.cachereset.CacheReset()
+	return err
 }
 
 // SoC replaces the api.Vehicle.SoC interface to take charged energy into account

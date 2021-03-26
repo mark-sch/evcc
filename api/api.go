@@ -131,6 +131,11 @@ type VehicleStopCharge interface {
 	StopCharge() error
 }
 
+// VehicleCacheReset
+type VehicleCacheReset interface {
+	CacheReset() error
+}
+
 // VehicleStopCharge stops the charging session on the vehicle side (e.g. release charge port)
 type ChangeLoadpointMode interface {
 	LoadpointMode(ChargeMode, ChargeStatus) error
