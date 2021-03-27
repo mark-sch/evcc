@@ -229,6 +229,13 @@ func (v *Tesla) StopCharge() error {
 	return nil
 }
 
+// StartCharge implements the api.StopCharge interface
+func (v *Tesla) StartCharge() error {
+	v.vehicle.Wakeup()
+
+	return nil
+}
+
 func (v *Tesla) LoadpointMode(mode api.ChargeMode, lpCS api.ChargeStatus) error {
 	if lpCS != teslaChargeStatus {
 		v.vehicle.Wakeup()
