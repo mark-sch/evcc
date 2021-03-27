@@ -144,8 +144,12 @@ func (cp *ConfigProvider) configureVehicles(conf config) error {
 		if err != nil {
 			err = fmt.Errorf("cannot create vehicle '%s': %w", cc.Name, err)
 			log.ERROR.Printf("%s", err)
+
+			//remove vehicle, so service can start
+			log.ERROR.Printf("removing vehicle %s. check config and software updates for vehicle api changes.", cc.Name)
+			delete(cp.vehicles, cc.Name)
+			continue
 			//return err
-			return nil
 		}
 
 		if _, exists := cp.vehicles[cc.Name]; exists {
