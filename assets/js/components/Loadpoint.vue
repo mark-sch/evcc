@@ -56,7 +56,7 @@
 						/>
 						<fa-icon
 							icon="clock"
-							v-bind:class="{ fas: socTimerActive, far: !socTimerActive }"
+							v-bind:class="{ fas: timerActive, far: !timerActive }"
 						></fa-icon>
 					</label>
 				</div> -->
@@ -106,7 +106,7 @@
 			</div>
 
 			<div class="col-12 col-md-4 d-none d-md-block mt-3" v-if="multi">
-				<div class="mb-2">Modus</div>
+				<div class="mb-2 pb-1">Modus</div>
 				<Mode
 					class="btn-group-sm"
 					:mode="mode"
@@ -115,7 +115,7 @@
 				></Mode>
 			</div>
 			<div class="col-12 col-md-4 d-none d-md-block mt-3" v-if="multi && hasTargetSoC">
-				<div class="mb-2">Ladeziel</div>
+				<div class="mb-2 pb-1">Ladeziel</div>
 				<Soc
 					class="btn-group-sm"
 					:soc="targetSoC"
@@ -164,11 +164,13 @@ export default {
 		// vehicle
 		connected: Boolean,
 		// charging: Boolean,
+		enabled: Boolean,
 		socTitle: String,
 		socCharge: Number,
 		minSoC: Number,
-		socTimerSet: Boolean,
-		socTimerActive: Boolean,
+		timerSet: Boolean,
+		timerActive: Boolean,
+		targetTime: String,
 
 		// details
 		chargePower: Number,

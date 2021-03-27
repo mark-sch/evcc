@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mark-sch/evcc/meter/sma"
+	"github.com/mark-sch/evcc/internal/meter/sma"
 	"github.com/mark-sch/evcc/util"
 )
 

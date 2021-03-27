@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mark-sch/evcc/charger/keba"
+	"github.com/mark-sch/evcc/internal/charger/keba"
 	"github.com/mark-sch/evcc/util"
 )
 

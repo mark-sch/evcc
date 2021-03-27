@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mark-sch/evcc/core"
-	"github.com/mark-sch/evcc/util"
 	"github.com/denisbrodbeck/machineid"
+	"github.com/mark-sch/evcc/core"
+	"github.com/mark-sch/evcc/hems/ocpp/profile"
+	"github.com/mark-sch/evcc/util"
 
 	ocpp16 "github.com/lorenzodonini/ocpp-go/ocpp1.6"
 	ocppcore "github.com/lorenzodonini/ocpp-go/ocpp1.6/core"
@@ -17,22 +18,16 @@ import (
 
 // OCPP is an OCPP client
 type OCPP struct {
-	log           *util.Logger
-	cache         *util.Cache
-	site          site
-	cp            ocpp16.ChargePoint
-	configuration ConfigMap
-}
-
-// site is the minimal interface for accessing site methods
-type site interface {
-	LoadPoints() []core.LoadPointAPI
+	log   *util.Logger
+	cache *util.Cache
+	site  core.SiteAPI
+	cp    ocpp16.ChargePoint
 }
 
 const retryTimeout = 5 * time.Second
 
 // New generates OCPP chargepoint client
-func New(conf map[string]interface{}, site site, cache *util.Cache) (*OCPP, error) {
+func New(conf map[string]interface{}, site core.SiteAPI, cache *util.Cache) (*OCPP, error) {
 	cc := struct {
 		URI       string
 		StationID string
@@ -58,16 +53,17 @@ func New(conf map[string]interface{}, site site, cache *util.Cache) (*OCPP, erro
 	cp := ocpp16.NewChargePoint(cc.StationID, nil, ws)
 
 	s := &OCPP{
-		log:           log,
-		cache:         cache,
-		site:          site,
-		cp:            cp,
-		configuration: getDefaultConfig(),
+		log:   log,
+		cache: cache,
+		site:  site,
+		cp:    cp,
 	}
 
 	err := cp.Start(cc.URI)
 	if err == nil {
-		cp.SetCoreHandler(s)
+		cp.SetCoreHandler(profile.NewCore(log, profile.GetDefaultConfig()))
+		cp.SetSmartChargingHandler(profile.NewSmartCharging(log))
+
 		go s.errorHandler(ws.Errors())
 		go s.errorHandler(cp.Errors())
 	}

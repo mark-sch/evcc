@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/mark-sch/evcc/api"
-	"github.com/mark-sch/evcc/charger"
-	"github.com/mark-sch/evcc/meter"
+	"github.com/mark-sch/evcc/internal/charger"
+	"github.com/mark-sch/evcc/internal/meter"
+	"github.com/mark-sch/evcc/internal/vehicle"
 	"github.com/mark-sch/evcc/provider/mqtt"
 	"github.com/mark-sch/evcc/push"
 	"github.com/mark-sch/evcc/server"
-	"github.com/mark-sch/evcc/vehicle"
 )
 
 type config struct {

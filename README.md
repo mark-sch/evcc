@@ -4,7 +4,6 @@
 [![Code Quality](https://goreportcard.com/badge/github.com/mark-sch/evcc)](https://goreportcard.com/report/github.com/mark-sch/evcc)
 [![Latest Version](https://img.shields.io/github/v/tag/andig/evcc.svg)](https://github.com/mark-sch/evcc/releases)
 [![Pulls from Docker Hub](https://img.shields.io/docker/pulls/andig/evcc.svg)](https://hub.docker.com/r/andig/evcc)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=48YVXXA7BDNC2)
 
 <img src="docs/logo.png" style="float: right" align="left" width="300" />EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage.<br/>
 
@@ -530,6 +529,8 @@ The MQTT API follows the REST API's structure, with loadpoint ids starting at `0
 Note: to modify writable settings append `/set` to the topic for writing.
 
 ## Background
+
+<img src="docs/logo.png" align="right" width="150" />
 
 EVCC is heavily inspired by [OpenWB](1). However, in 2019, I found OpenWB's architecture slightly intimidating with everything basically global state and heavily relying on shell scripting. On the other side, especially the scripting aspect is one that contributes to [OpenWB's](1) flexibility.
 
