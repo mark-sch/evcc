@@ -311,6 +311,13 @@ func (lp *LoadPoint) evChargeStartHandler() {
 	lp.log.INFO.Println("start charging ->")
 	lp.triggerEvent(evChargeStart)
 
+	// wake up vehicle
+	if car, ok := lp.vehicle.(api.VehicleStartCharge); ok {
+		if err := car.StartCharge(); err != nil {
+			lp.log.ERROR.Printf("vehicle remote charge start: %v", err)
+		}
+	}
+
 	// soc update reset
 	lp.socUpdated = time.Time{}
 }
@@ -532,13 +539,6 @@ func (lp *LoadPoint) setLimit(chargeCurrent float64, force bool) (err error) {
 			lp.guardUpdated = lp.clock.Now()
 
 			lp.bus.Publish(evChargeCurrent, chargeCurrent)
-
-			// wake up vehicle
-			if car, ok := lp.vehicle.(api.VehicleStartCharge); enabled && ok {
-				if err := car.StartCharge(); err != nil {
-					lp.log.ERROR.Printf("vehicle remote charge start: %v", err)
-				}
-			}
 		} else {
 			lp.log.ERROR.Printf("charger %s: %v", status[enabled], err)
 		}
