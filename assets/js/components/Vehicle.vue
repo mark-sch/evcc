@@ -69,14 +69,14 @@ export default {
 	},
 	computed: {
 		socChargeDisplayWidth: function () {
-			if (this.hasVehicle && this.socCharge >= 0) {
+			if (this.hasVehicle && this.socCharge > 0) {
 				return this.socCharge;
 			}
 			return 100;
 		},
 		socChargeDisplayValue: function () {
 			// no soc or no soc value
-			if (!this.hasVehicle || !this.socCharge || this.socCharge < 0) {
+			if (!this.hasVehicle || !this.socCharge || this.socCharge <= 0) {
 				let chargeStatus = "getrennt";
 				if (this.charging) {
 					chargeStatus = "lädt";
@@ -99,7 +99,10 @@ export default {
 			if (this.minSoCActive) {
 				return this.minSoC;
 			}
-			if (this.targetSoC > this.socCharge) {
+			if (this.targetSoC === 100) {
+				return null;
+			}
+			if (this.targetSoC > this.socCharge && this.connected) {
 				return this.targetSoC;
 			}
 			return null;
@@ -117,13 +120,13 @@ export default {
 			return "bg-secondary";
 		},
 		minSoCActive: function () {
-			return this.minSoC > 0 && this.socCharge < this.minSoC;
+			return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
 		},
 		targetChargeEnabled: function () {
 			return this.targetTime && this.timerSet;
 		},
 		remainingSoCWidth: function () {
-			if (this.socCharge === 100) {
+			if (this.socCharge === 100 || this.socCharge <= 0) {
 				return null;
 			}
 			if (this.minSoCActive) {
@@ -179,7 +182,6 @@ export default {
 	top: -2px;
 	bottom: -2px;
 	width: 2px;
-	z-index: -1;
 }
 .bg-disabled {
 	background-color: var(--gray);
