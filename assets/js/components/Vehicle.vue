@@ -179,6 +179,7 @@ export default {
 	top: -2px;
 	bottom: -2px;
 	width: 2px;
+	z-index: -1;
 }
 .bg-disabled {
 	background-color: var(--gray);
