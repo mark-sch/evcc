@@ -18,16 +18,17 @@
 					<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 						<div class="navbar-nav mr-auto"></div>
 						<div class="navbar-nav">
+							<a
+								class="nav-item nav-link pb-1"
+								href="../smartbox/"
+								>Home
+							</a>
 							<router-link class="nav-item nav-link pb-1" to="/">Laden</router-link>
 							<router-link class="nav-item nav-link pb-1" to="/config"
 								>Konfiguration</router-link
 							>
 							<span v-html="getVisLink()"></span>
-							<a
-								class="nav-item nav-link pb-1"
-								href="../broker/login"
-								>Login
-							</a>
+							<span v-html="getLoginLink()"></span>
 						</div>
 					</div>
 				</div>

@@ -63,6 +63,14 @@ export default {
       let strLink = `<a class="nav-item nav-link pb-1" href="${url}">VIS-mobile</a>`;
       return strLink;
     },
+    getLoginLink: function() {
+			if (document.location.href.indexOf("auth=1") > -1) {
+				return `<a class="nav-item nav-link pb-1" href="../smartbox/logout">Logout</a>`;
+			}
+			else {
+				return `<a class="nav-item nav-link pb-1" href="../smartbox/login">Login</a>`;
+			}
+		},
     fmtAbsoluteDate: function (date) {
       return new Intl.DateTimeFormat("de-DE", {
         weekday: "short",
