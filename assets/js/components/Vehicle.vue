@@ -44,6 +44,7 @@
 				icon="exclamation-circle"
 			></fa-icon>
 			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
+			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
 			{{ markerLabel() }}
 		</small>
 	</div>
@@ -58,6 +59,7 @@ export default {
 		socTitle: String,
 		connected: Boolean,
 		hasVehicle: Boolean,
+		hasPriority: Boolean,
 		socCharge: Number,
 		enabled: Boolean,
 		charging: Boolean,
@@ -122,6 +124,9 @@ export default {
 		minSoCActive: function () {
 			return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
 		},
+		priorityActive: function () {
+			return this.hasPriority
+		},
 		targetChargeEnabled: function () {
 			return this.targetTime && this.timerSet;
 		},
@@ -141,6 +146,9 @@ export default {
 	methods: {
 		// not computed because it needs to update over time
 		markerLabel: function () {
+			if (this.priorityActive) {
+				return 'Bevorzugt bei Überschussladung'
+			}
 			if (!this.connected) {
 				return null;
 			}

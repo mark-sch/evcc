@@ -177,6 +177,7 @@ export default {
 		chargedEnergy: Number,
 		// chargeDuration: Number,
 		hasVehicle: Boolean,
+		hasPriority: Boolean,
 		climater: String,
 		range: Number,
 		chargeEstimate: Number,

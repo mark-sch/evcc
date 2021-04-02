@@ -41,10 +41,15 @@ func (lp *LoadPoint) SetMode(mode api.ChargeMode) {
 	lp.Lock()
 	defer lp.Unlock()
 
-	lp.log.INFO.Printf("set charge mode: %s", string(mode))
+	// set loadpoint priority if pv mode is set twice
+	if lp.Mode == mode && lp.Mode == api.ModePV {
+		lp.log.INFO.Print("set loadpoint priority")
+		lp.site.setLoadpointPriority(lp)
+	}
 
 	// apply immediately
 	if lp.Mode != mode {
+		lp.log.INFO.Printf("set charge mode: %s", string(mode))
 		lp.Mode = mode
 		lp.publish("mode", mode)
 

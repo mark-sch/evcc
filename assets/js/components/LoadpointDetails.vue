@@ -18,6 +18,11 @@
 					icon="thermometer-half"
 					v-if="climater == 'on'"
 				></fa-icon>
+				<fa-icon
+					class="text-primary ml-1"
+					icon="star"
+					v-if="hasPriority"
+				></fa-icon>
 			</div>
 			<h2 class="value">
 				{{ fmt(chargePower) }}
@@ -71,6 +76,7 @@ export default {
 		chargePower: Number,
 		climater: String,
 		hasVehicle: Boolean,
+		hasPriority: Boolean,
 		range: Number,
 	},
 	mixins: [formatter],

@@ -104,6 +104,7 @@ type LoadPoint struct {
 	chargeCurrentUpdated time.Time //time when charger current was changed
 	guardUpdated         time.Time // Charger enabled/disabled timestamp
 	socUpdated           time.Time // SoC updated timestamp (poll: connected)
+	hasPriority          bool
 
 	charger     api.Charger
 	chargeTimer api.ChargeTimer
@@ -226,6 +227,7 @@ func NewLoadPoint(log *util.Logger) *LoadPoint {
 		MaxCurrent:    16, // A
 		GuardDuration: 5 * time.Minute,
 		NextPVCheck:   false,
+		hasPriority:   false,
 	}
 
 	return lp
@@ -381,7 +383,7 @@ func (lp *LoadPoint) evVehicleDisconnectHandler() {
 	lp.triggerEvent(evVehicleDisconnect)
 
 	// set default mode on disconnect
-	if lp.OnDisconnect.Mode != "" && lp.GetMode() != api.ModeOff {
+	if lp.OnDisconnect.Mode != "" && lp.GetMode() != lp.OnDisconnect.Mode {
 		lp.SetMode(lp.OnDisconnect.Mode)
 		//lp.ForeignEV = false
 	}
@@ -496,6 +498,7 @@ func (lp *LoadPoint) syncCharger() {
 
 func (lp *LoadPoint) setLimit(chargeCurrent float64, force bool) (err error) {
 	// limit charge current accross all loadpoints
+	// also adjust due to loadpoint priority
 	wantedCurrent := chargeCurrent
 	chargeCurrent = lp.site.limitChargeCurrent(wantedCurrent, lp)
 	if chargeCurrent != lp.chargeCurrent && wantedCurrent > chargeCurrent {
@@ -564,6 +567,13 @@ func (lp *LoadPoint) targetSocReached() bool {
 		lp.SoC.Target > 0 &&
 		lp.SoC.Target < 100 &&
 		lp.socCharge >= float64(lp.SoC.Target)
+}
+
+func (lp *LoadPoint) targetSocNotReached() bool {
+	return lp.vehicle != nil &&
+		lp.SoC.Target > 0 &&
+		lp.SoC.Target < 100 &&
+		lp.socCharge < float64(lp.SoC.Target)
 }
 
 // minSocNotReached checks if minimum is configured and not reached.

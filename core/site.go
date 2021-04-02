@@ -334,10 +334,29 @@ func (site *Site) update(lp Updater, sitePower float64) {
 	//}
 }
 
+func (site *Site) setLoadpointPriority(lp *LoadPoint) {
+	if lp.hasPriority {
+		lp.hasPriority = false
+		lp.publish("hasPriority", false)
+		return
+	}
+
+	if len(site.loadpoints) > 1 && !lp.hasPriority {
+		for _, slp := range site.loadpoints {
+			if slp == lp {
+				slp.hasPriority = true
+				slp.publish("hasPriority", true)
+			} else {
+				slp.hasPriority = false
+				slp.publish("hasPriority", false)
+			}
+		}
+	}
+}
+
 func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
 	//determine if any loadpoint is requesting more current than actually using
-	for id, slp := range site.loadpoints {
-		_ = id
+	for _, slp := range site.loadpoints {
 		if slp.chargeCurrent > float64(slp.MinCurrent) && lp.clock.Since(slp.chargeCurrentUpdated) > 15*time.Second {
 			if curr, err := slp.chargeMeter.CurrentPower(); err == nil && curr+1 < slp.chargeCurrent {
 				var newCurrent float64
@@ -357,11 +376,25 @@ func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
 func (site *Site) limitChargeCurrent(chargeCurrent float64, lp *LoadPoint) float64 {
 	var siteChargeCurrentLimit float64 = site.MaxCurrent
 	var siteChargeCurrent float64 = 0
-	for id, slp := range site.loadpoints {
-		_ = id
+	var bolPriorityExists bool = false
+	var lpPrio *LoadPoint
+
+	for _, slp := range site.loadpoints {
 		siteChargeCurrent += slp.chargeCurrent
+		if slp.hasPriority {
+			bolPriorityExists = true
+			lpPrio = slp
+		}
 	}
 	remainingChargeCurrent := siteChargeCurrentLimit - siteChargeCurrent + lp.chargeCurrent
+
+	//further checks due to loadpoint priority
+	if !lp.hasPriority && bolPriorityExists && lp.Mode == api.ModeNow {
+		if (lpPrio.charging() || lpPrio.connected()) && (lpPrio.targetSocNotReached() || lpPrio.minSocNotReached()) {
+			remainingChargeCurrent = 0
+		}
+	}
+
 	if chargeCurrent <= remainingChargeCurrent {
 		return chargeCurrent
 	} else {
