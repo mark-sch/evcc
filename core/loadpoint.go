@@ -572,7 +572,8 @@ func (lp *LoadPoint) targetSocReached() bool {
 func (lp *LoadPoint) targetSocNotReached() bool {
 	return lp.vehicle != nil &&
 		lp.SoC.Target > 0 &&
-		lp.SoC.Target < 100 &&
+		lp.SoC.Target <= 100 &&
+		lp.socCharge > 0 &&
 		lp.socCharge < float64(lp.SoC.Target)
 }
 
