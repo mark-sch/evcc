@@ -574,7 +574,7 @@ func (lp *LoadPoint) targetSocNotReached() bool {
 		lp.SoC.Target > 0 &&
 		lp.SoC.Target <= 100 &&
 		lp.socCharge > 0 &&
-		lp.socCharge < float64(lp.SoC.Target)
+		lp.socCharge+1 < float64(lp.SoC.Target)
 }
 
 // minSocNotReached checks if minimum is configured and not reached.
