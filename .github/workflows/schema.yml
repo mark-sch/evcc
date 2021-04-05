@@ -20,5 +20,5 @@ jobs:
       with:
         yamlSchemasJson: |
           {
-              "./schema.json": ["evcc.dist.yaml"]
+              "./schema.json": ["evcc.sunny5.yaml"]
           }

@@ -40,15 +40,12 @@
 		</div>
 
 		<div class="col-6 col-md-3 mt-3" v-if="pvConfigured">
-			<div class="mb-2 value">
-				Verbrauch <fa-icon icon="plug" class="text-primary" />
-			</div>
+			<div class="mb-2 value">Verbrauch <fa-icon icon="plug" class="text-primary" /></div>
 			<h2 class="value">
 				{{ fmt(consumptionPower) }}
 				<small class="text-muted">{{ fmtUnit(consumptionPower) }}W</small>
 			</h2>
 		</div>
-
 	</div>
 </template>
 

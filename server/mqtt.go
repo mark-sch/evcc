@@ -71,36 +71,40 @@ func (m *MQTT) publish(topic string, retained bool, payload interface{}) {
 func (m *MQTT) listenSiteOnlySetters(topic string, apiHandler core.SiteAPI) {
 	m.publishSingleValue(topic+"/prioritySoC/set", false, "ok")
 	m.Handler.Listen(topic+"/prioritySoC/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			prioritysoc, err := strconv.Atoi(payload)
 			if err == nil {
-				apiHandler.SetPrioritySoC(float64(prioritysoc))
+				err = apiHandler.SetPrioritySoC(float64(prioritysoc))
 				//confirm /set change
-				m.publishSingleValue(topic+"/prioritySoC/set", true, "ok") 
+				if err == nil {
+					m.publishSingleValue(topic+"/prioritySoC/set", true, "ok")
+				}
 			}
 		}
 	})
 
 	m.publishSingleValue(topic+"/minSoC/set", false, "ok")
 	m.Handler.Listen(topic+"/minSoC/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			soc, err := strconv.Atoi(payload)
 			if err == nil {
 				_ = apiHandler.SetMinSoC(soc)
 				//confirm /set change
-				m.publishSingleValue(topic+"/minSoC/set", true, "ok") 
+				m.publishSingleValue(topic+"/minSoC/set", true, "ok")
 			}
 		}
 	})
 
 	m.publishSingleValue(topic+"/residualPower/set", false, "ok")
 	m.Handler.Listen(topic+"/residualPower/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			residualpower, err := strconv.Atoi(payload)
 			if err == nil {
-				apiHandler.SetResidualPower(float64(residualpower))
+				err = apiHandler.SetResidualPower(float64(residualpower))
 				//confirm /set change
-				m.publishSingleValue(topic+"/residualPower/set", true, "ok") 
+				if err == nil {
+					m.publishSingleValue(topic+"/residualPower/set", true, "ok")
+				}
 			}
 		}
 	})
@@ -109,33 +113,33 @@ func (m *MQTT) listenSiteOnlySetters(topic string, apiHandler core.SiteAPI) {
 func (m *MQTT) listenSetters(topic string, apiHandler core.LoadPointAPI) {
 	m.publishSingleValue(topic+"/mode/set", false, "ok")
 	m.Handler.Listen(topic+"/mode/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			apiHandler.SetMode(api.ChargeMode(payload))
 			//confirm /set change
-			m.publishSingleValue(topic+"/mode/set", true, "ok") 
+			m.publishSingleValue(topic+"/mode/set", true, "ok")
 		}
 	})
-	
+
 	m.publishSingleValue(topic+"/minSoC/set", false, "ok")
 	m.Handler.Listen(topic+"/minSoC/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			soc, err := strconv.Atoi(payload)
 			if err == nil {
 				_ = apiHandler.SetMinSoC(soc)
 				//confirm /set change
-				m.publishSingleValue(topic+"/minSoC/set", true, "ok") 
+				m.publishSingleValue(topic+"/minSoC/set", true, "ok")
 			}
 		}
 	})
-	
+
 	m.publishSingleValue(topic+"/targetSoC/set", false, "ok")
 	m.Handler.Listen(topic+"/targetSoC/set", func(payload string) {
-		if payload != "ok" { 
+		if payload != "ok" {
 			soc, err := strconv.Atoi(payload)
 			if err == nil {
 				_ = apiHandler.SetTargetSoC(soc)
 				//confirm /set change
-				m.publishSingleValue(topic+"/targetSoC/set", true, "ok") 
+				m.publishSingleValue(topic+"/targetSoC/set", true, "ok")
 			}
 		}
 	})

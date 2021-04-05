@@ -231,26 +231,27 @@ func (v *Tesla) FinishTime() (time.Time, error) {
 
 // StopCharge implements the api.StopCharge interface
 func (v *Tesla) StopCharge() error {
-	v.vehicle.OpenChargePort()
+	err := v.vehicle.OpenChargePort()
 
-	return nil
+	return err
 }
 
 // StartCharge implements the api.StopCharge interface
 func (v *Tesla) StartCharge() error {
-	v.vehicle.Wakeup()
+	_, err := v.vehicle.Wakeup()
 
-	return nil
+	return err
 }
 
 func (v *Tesla) LoadpointMode(mode api.ChargeMode, lpCS api.ChargeStatus) error {
+	var err error
 	if lpCS != teslaChargeStatus {
-		v.vehicle.Wakeup()
+		_, err = v.vehicle.Wakeup()
 	}
 
 	if mode != api.ModeOff && lpCS == api.StatusA {
-		v.vehicle.OpenChargePort()
+		err = v.vehicle.OpenChargePort()
 	}
 
-	return nil
+	return err
 }

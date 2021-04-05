@@ -3,7 +3,9 @@
 		<div>
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				<div class="container">
-					<a class="navbar-brand" href="https://www.sunny5.de" target="_new"><img src="ico/favicon-32x32.png" alt="Sunny5 Logo"></i></a>
+					<a class="navbar-brand" href="https://www.sunny5.de" target="_new"
+						><img src="ico/favicon-32x32.png" alt="Sunny5 Logo"
+					/></a>
 					<button
 						class="navbar-toggler"
 						type="button"
@@ -18,11 +20,7 @@
 					<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 						<div class="navbar-nav mr-auto"></div>
 						<div class="navbar-nav">
-							<a
-								class="nav-item nav-link pb-1"
-								href="../smartbox/"
-								>Home
-							</a>
+							<a class="nav-item nav-link pb-1" href="../smartbox/">Home </a>
 							<router-link class="nav-item nav-link pb-1" to="/">Laden</router-link>
 							<router-link class="nav-item nav-link pb-1" to="/config"
 								>Konfiguration</router-link
@@ -43,13 +41,12 @@
 <script>
 import "../icons";
 import formatter from "../mixins/formatter";
-import Logo from "../components/Logo";
 import Footer from "../components/Footer";
 import store from "../store";
 
 export default {
 	name: "App",
-	components: { Logo, Footer },
+	components: { Footer },
 	data: function () {
 		return {
 			compact: false,
@@ -78,15 +75,21 @@ export default {
 			};
 			ws.onmessage = function (evt) {
 				try {
-					var hashCode = function(s) {
-						return 'Msg'+Math.abs(s.split('').reduce( (a, b) => {
-							a = (( a << 5 ) - a ) + b.charCodeAt(0);
-							return a & a;
-						}, 0));    
-					}
+					var hashCode = function (s) {
+						return (
+							"Msg" +
+							Math.abs(
+								s.split("").reduce((a, b) => {
+									a = (a << 5) - a + b.charCodeAt(0);
+									return a & a;
+								}, 0)
+							)
+						);
+					};
 					var msg = JSON.parse(evt.data);
-					
-					if (window.throttledToasts[hashCode(evt.data)] == undefined) window.throttledToasts[hashCode(evt.data)] = store.update.throttle(10000);
+
+					if (window.throttledToasts[hashCode(evt.data)] == undefined)
+						window.throttledToasts[hashCode(evt.data)] = store.update.throttle(10000);
 					//store.update(msg);
 					window.throttledToasts[hashCode(evt.data)](msg);
 				} catch (e) {

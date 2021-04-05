@@ -366,7 +366,7 @@ func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
 					newCurrent = curr + 1
 				}
 
-				slp.setLimit(newCurrent, false)
+				_ = slp.setLimit(newCurrent, false)
 				site.log.INFO.Printf("current judgement: pwm was set to %.2gA, using %.2gA, now limiting to %.2gA", slp.chargeCurrent, curr, newCurrent)
 			}
 		}

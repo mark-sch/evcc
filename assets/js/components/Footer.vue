@@ -9,7 +9,9 @@
 				</div>
 				<div class="col-6 text-right">
 					<small class="text-muted">
-						<a href= "https://github.com/mark-sch/evcc" target="_blank">&copy; 2020 andig/evcc, Think5 GmbH et al.</a>
+						<a href="https://github.com/mark-sch/evcc" target="_blank"
+							>&copy; 2020 andig/evcc, Think5 GmbH et al.</a
+						>
 					</small>
 				</div>
 			</div>

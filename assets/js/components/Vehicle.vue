@@ -125,7 +125,7 @@ export default {
 			return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
 		},
 		priorityActive: function () {
-			return this.hasPriority
+			return this.hasPriority;
 		},
 		targetChargeEnabled: function () {
 			return this.targetTime && this.timerSet;
@@ -147,7 +147,7 @@ export default {
 		// not computed because it needs to update over time
 		markerLabel: function () {
 			if (this.priorityActive) {
-				return 'Bevorzugt bei Überschussladung'
+				return "Bevorzugt bei Überschussladung";
 			}
 			if (!this.connected) {
 				return null;

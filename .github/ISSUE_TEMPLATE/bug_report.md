@@ -41,15 +41,3 @@ Show output of <code>evcc -v</code>:
 <- paste here
 
 </pre></details>
-
-**If using Docker:**
-Show output of <code>docker run andig/evcc -v</code>:
-```
-<- paste here
-
-```
-
-<details><summary>Show evcc log output with <code>docker logs <container id></code>:</summary><br><pre>
-<- paste here
-
-</pre></details>

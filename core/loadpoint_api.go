@@ -56,7 +56,7 @@ func (lp *LoadPoint) SetMode(mode api.ChargeMode) {
 		lp.requestUpdate()
 
 		if car, ok := lp.vehicle.(api.ChangeLoadpointMode); ok && mode != api.ModeOff {
-			car.LoadpointMode(mode, lp.status)
+			_ = car.LoadpointMode(mode, lp.status)
 		}
 	}
 

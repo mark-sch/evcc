@@ -364,7 +364,7 @@ func (lp *LoadPoint) evVehicleConnectHandler() {
 		for _, vehicle := range lp.vehicles {
 			cr, ok := vehicle.(api.VehicleCacheReset)
 			if ok {
-				cr.CacheReset()
+				_ = cr.CacheReset()
 			}
 		}
 	}
@@ -639,10 +639,9 @@ func (lp *LoadPoint) setActiveVehicle(vehicle api.Vehicle) {
 
 // findActiveVehicle validates if the active vehicle is still connected to the loadpoint
 func (lp *LoadPoint) findActiveVehicle() {
-	if len(lp.vehicles) <= 1 && lp.ForeignEV == false {
+	if len(lp.vehicles) <= 1 && !lp.ForeignEV {
 		return
 	}
-	found := false
 
 	cs, csok := lp.vehicle.(api.ChargeState)
 	csext, csextok := lp.vehicle.(api.ChargeStateExt)
@@ -698,7 +697,6 @@ func (lp *LoadPoint) findActiveVehicle() {
 							}
 							lp.publish("socTitle", vehicle.Title())
 							lp.publish("socCapacity", vehicle.Capacity())
-							found = true
 							lp.ForeignEV = false
 							return
 						}
@@ -708,7 +706,7 @@ func (lp *LoadPoint) findActiveVehicle() {
 		}
 	}
 
-	if lp.connected() && !found && !lp.ForeignEV {
+	if lp.connected() && !lp.ForeignEV {
 		lp.publish("socTitle", "Fahrzeug")
 		lp.publish("socCharge", -1)
 		lp.publish("range", -1)
@@ -944,7 +942,7 @@ func (lp *LoadPoint) socPollAllowed() bool {
 
 // publish state of charge, remaining charge duration and range
 func (lp *LoadPoint) publishSoCAndRange(force bool) {
-	if lp.socEstimator == nil || lp.ForeignEV == true {
+	if lp.socEstimator == nil || lp.ForeignEV {
 		return
 	}
 
