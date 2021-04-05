@@ -8,7 +8,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/mock"
-	"github.com/mark-sch/evcc/push"
 	"github.com/mark-sch/evcc/util"
 )
 
@@ -31,6 +30,7 @@ func (n *Null) ChargingTime() (time.Duration, error) {
 	return 0, nil
 }
 
+/*
 func attachListeners(t *testing.T, lp *LoadPoint) {
 	Voltage = 230 // V
 
@@ -65,6 +65,7 @@ func attachListeners(t *testing.T, lp *LoadPoint) {
 
 	lp.Prepare(uiChan, pushChan, lpChan, nil)
 }
+*/
 
 func TestNew(t *testing.T) {
 	lp := NewLoadPoint(util.NewLogger("foo"))
@@ -492,6 +493,7 @@ func TestSetModeAndSocAtDisconnect(t *testing.T) {
 */
 
 // cacheExpecter can be used to verify asynchronously written values from cache
+/*
 func cacheExpecter(t *testing.T, lp *LoadPoint) (*util.Cache, func(key string, val interface{})) {
 	// attach cache for verifying values
 	paramC := make(chan util.Param)
@@ -510,6 +512,7 @@ func cacheExpecter(t *testing.T, lp *LoadPoint) (*util.Cache, func(key string, v
 
 	return cache, expect
 }
+*/
 
 /*
 func TestChargedEnergyAtDisconnect(t *testing.T) {
