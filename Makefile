@@ -2,7 +2,7 @@
 .PHONY: docker publish-testing publish-latest publish-images
 .PHONY: prepare-image image-rootfs image-update
 
-TAG_NAME := 2021.3.89
+TAG_NAME := 2021.4.98
 SHA := $(shell test -d .git && git rev-parse --short HEAD)
 VERSION := $(if $(TAG_NAME),$(TAG_NAME),$(SHA))
 BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
@@ -11,7 +11,7 @@ LD_FLAGS := -X github.com/mark-sch/evcc/server.Version=$(VERSION) -X github.com/
 BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
 # docker
-DOCKER_IMAGE := andig/evcc
+DOCKER_IMAGE := mark-sch/evcc
 ALPINE_VERSION := 3.13
 TARGETS := arm.v6,arm.v8,amd64
 

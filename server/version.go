@@ -8,7 +8,7 @@ var (
 	Owner = "mark-sch"
 
 	// Version of executable
-	Version = "0.0.1-alpha"
+	Version = "2021.4.98"
 
 	// Commit of executable
 	Commit = "HEAD"
