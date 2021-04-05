@@ -42,14 +42,6 @@ jobs:
     - name: Build
       run: make build
 
-    - name: Lint
-      uses: golangci/golangci-lint-action@v2
-      with:
-        version: v1.37
-
-    - name: Test
-      run: make test
-
   build-ui:
     name: Build UI
     runs-on: ubuntu-latest
@@ -71,9 +63,6 @@ jobs:
 
     - name: Build
       run: make ui
-
-    - name: Lint
-      run: make lint-ui
 
     - name: Porcelain
       run: |
