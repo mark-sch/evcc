@@ -1,13 +1,15 @@
 # STEP 1 build ui
 FROM node:14-alpine as node
 
-RUN apk update && apk add --no-cache make
+RUN apk update && apk add --upgrade grep --no-cache make && apk add bash
 
 WORKDIR /build
 
 # install node tools
 COPY Makefile .
+COPY git-branch-status /bin/
 COPY package*.json ./
+COPY git-branch-status .
 RUN make install-ui
 
 # build ui
@@ -23,12 +25,13 @@ FROM golang:1.16-alpine as builder
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
-RUN apk update && apk add --no-cache git ca-certificates tzdata alpine-sdk && update-ca-certificates
+RUN apk update && apk add --upgrade grep --no-cache git bash ca-certificates tzdata alpine-sdk && update-ca-certificates
 
 WORKDIR /build
 
 # install go tools and cache modules
 COPY Makefile .
+COPY git-branch-status /bin/
 COPY go.mod .
 COPY go.sum .
 RUN make install

@@ -657,7 +657,6 @@ func (lp *LoadPoint) findActiveVehicle() {
 
 		if err == nil {
 			lp.log.DEBUG.Printf("vehicle status: %s (%s / %dkWh)", status, lp.vehicle.Title(), lp.vehicle.Capacity())
-
 			// vehicle is plugged or charging, so it should be the right one
 			if lp.connected() && (status == api.StatusB || status == api.StatusC) {
 				if lp.ForeignEV {

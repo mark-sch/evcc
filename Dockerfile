@@ -1,12 +1,13 @@
 # STEP 1 build ui
 FROM node:14-alpine as node
 
-RUN apk update && apk add --no-cache make
+RUN apk update && apk add --upgrade grep --no-cache make && apk add bash
 
 WORKDIR /build
 
 # install node tools
 COPY Makefile .
+COPY git-branch-status /bin/
 COPY package*.json ./
 RUN make install-ui
 
@@ -23,12 +24,13 @@ FROM golang:1.16-alpine as builder
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
-RUN apk update && apk add --no-cache git ca-certificates tzdata alpine-sdk && update-ca-certificates
+RUN apk update && apk add --upgrade grep --no-cache git bash ca-certificates tzdata alpine-sdk && update-ca-certificates
 
 WORKDIR /build
 
 # install go tools and cache modules
 COPY Makefile .
+COPY git-branch-status /bin/
 COPY go.mod .
 COPY go.sum .
 RUN make install
@@ -57,16 +59,11 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /build/evcc /usr/local/bin/evcc
 
-COPY entrypoint.sh /app/
+COPY docker/bin/* /evcc/
 
-# UI and /api
-EXPOSE 7070/tcp
-# KEBA charger
-EXPOSE 7090/udp
-# SMA Energy Manager
-EXPOSE 9522/udp
+EXPOSE 7070
 
 HEALTHCHECK --interval=60s --start-period=60s --timeout=30s --retries=3 CMD [ "evcc", "health" ]
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENTRYPOINT [ "/evcc/entrypoint.sh" ]
 CMD [ "evcc" ]
