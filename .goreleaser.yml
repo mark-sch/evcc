@@ -12,7 +12,7 @@ builds:
   flags:
   - -tags=release
   ldflags:
-  - -X github.com/mark-sch/evcc/server.Version={{.Version}} -X github.com/mark-sch/evcc/server.Commit={{.ShortCommit}}
+  - -X github.com/mark-sch/evcc/server.Version={{.Version}} -X github.com/mark-sch/evcc/server.Commit={{.ShortCommit}} -s -w
   env:
   - CGO_ENABLED=0
   goos:

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/mark-sch/evcc/api"
-	"github.com/mark-sch/evcc/internal/vehicle/oidc"
 	"github.com/mark-sch/evcc/provider"
 	"github.com/mark-sch/evcc/util"
+	"github.com/mark-sch/evcc/util/oauth"
 	"github.com/mark-sch/evcc/util/request"
 )
 
@@ -24,7 +24,7 @@ type Ford struct {
 	*embed
 	*request.Helper
 	user, password, vin string
-	tokens              oidc.Token
+	tokens              oauth.Token
 	chargeStateG        func() (float64, error)
 }
 
@@ -84,7 +84,7 @@ func (v *Ford) login(user, password string) error {
 		return err
 	}
 
-	var tokens oidc.Token
+	var tokens oauth.Token
 	if err = v.DoJSON(req, &tokens); err == nil {
 		v.tokens = tokens
 	}
