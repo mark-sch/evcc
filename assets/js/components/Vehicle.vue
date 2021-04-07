@@ -1,62 +1,28 @@
 <template>
-	<div>
-		<div class="mb-2 pb-1">
-			{{ socTitle || "Fahrzeug" }}
+	<div class="pt-3 pb-2">
+		<div class="mb-3">
+			<span>{{ socTitle || "&nbsp;" }}</span>
+			<span v-if="range >= 0" class="text-muted">/ {{ range }} km</span>
 		</div>
-		<div class="soc-bar">
-			<div class="progress small">
-				<div
-					class="progress-bar"
-					role="progressbar"
-					:class="{
-						'progress-bar-striped': charging,
-						'progress-bar-animated': charging,
-						[progressColor]: true,
-					}"
-					:style="{ width: `${socChargeDisplayWidth}%` }"
-				>
-					{{ socChargeDisplayValue }}
-				</div>
-				<div
-					v-if="remainingSoCWidth > 0"
-					class="progress-bar"
-					role="progressbar"
-					:class="{
-						'progress-bar-striped': charging,
-						'progress-bar-animated': charging,
-						[progressColor]: true,
-						'bg-muted': true,
-					}"
-					:style="{ width: `${remainingSoCWidth}%` }"
-				></div>
-				<div
-					v-if="socMarker"
-					class="soc-marker"
-					:class="{ [progressColor]: true }"
-					:style="{ left: `${socMarker}%` }"
-				></div>
-			</div>
-		</div>
-		<small v-if="markerLabel()" class="subline my-2 text-secondary">
-			<fa-icon
-				v-if="minSoCActive"
-				class="text-muted mr-1"
-				icon="exclamation-circle"
-			></fa-icon>
-			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
-			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
-			{{ markerLabel() }}
-		</small>
+		<VehicleSoc v-bind="vehicleSoc" @target-soc-updated="targetSocUpdated" />
+		<VehicleSubline
+			v-bind="vehicleSubline"
+			@target-time-updated="targetTimeUpdated"
+			class="my-1"
+		/>
 	</div>
 </template>
 
 <script>
-import formatter from "../mixins/formatter";
+import collector from "../mixins/collector";
+
+import VehicleSoc from "./VehicleSoc";
+import VehicleSubline from "./VehicleSubline";
 
 export default {
 	name: "Vehicle",
+	components: { VehicleSoc, VehicleSubline },
 	props: {
-		socTitle: String,
 		connected: Boolean,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
@@ -64,137 +30,37 @@ export default {
 		enabled: Boolean,
 		charging: Boolean,
 		minSoC: Number,
+		range: Number,
+		socTitle: String,
 		timerActive: Boolean,
 		timerSet: Boolean,
 		targetTime: String,
 		targetSoC: Number,
 	},
+	data: function () {
+		return {
+			selectedTargetSoC: null,
+		};
+	},
 	computed: {
-		socChargeDisplayWidth: function () {
-			if (this.hasVehicle && this.socCharge > 0) {
-				return this.socCharge;
-			}
-			return 100;
+		vehicleSoc: function () {
+			return this.collectProps(VehicleSoc);
 		},
-		socChargeDisplayValue: function () {
-			// no soc or no soc value
-			if (!this.hasVehicle || !this.socCharge || this.socCharge <= 0) {
-				let chargeStatus = "getrennt";
-				if (this.charging) {
-					chargeStatus = "lädt";
-				} else if (this.enabled) {
-					chargeStatus = "bereit";
-				} else if (this.connected) {
-					chargeStatus = "verbunden";
-				}
-				return chargeStatus;
-			}
-
-			// percent value if enough space
-			let socCharge = this.socCharge;
-			if (socCharge >= 10) {
-				socCharge += "%";
-			}
-			return socCharge;
-		},
-		socMarker: function () {
-			if (this.minSoCActive) {
-				return this.minSoC;
-			}
-			if (this.targetSoC === 100) {
-				return null;
-			}
-			if (this.targetSoC > this.socCharge && this.connected) {
-				return this.targetSoC;
-			}
-			return null;
-		},
-		progressColor: function () {
-			if (!this.connected) {
-				return "bg-light border";
-			}
-			if (this.minSoCActive) {
-				return "bg-danger";
-			}
-			if (this.enabled) {
-				return "bg-primary";
-			}
-			return "bg-secondary";
-		},
-		minSoCActive: function () {
-			return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
+		vehicleSubline: function () {
+			return this.collectProps(VehicleSubline);
 		},
 		priorityActive: function () {
 			return this.hasPriority;
 		},
-		targetChargeEnabled: function () {
-			return this.targetTime && this.timerSet;
-		},
-		remainingSoCWidth: function () {
-			if (this.socCharge === 100 || this.socCharge <= 0) {
-				return null;
-			}
-			if (this.minSoCActive) {
-				return this.minSoC - this.socCharge;
-			}
-			if (this.targetSoC > this.socCharge) {
-				return this.targetSoC - this.socCharge;
-			}
-			return null;
-		},
 	},
 	methods: {
-		// not computed because it needs to update over time
-		markerLabel: function () {
-			if (this.priorityActive) {
-				return "Bevorzugt bei Überschussladung";
-			}
-			if (!this.connected) {
-				return null;
-			}
-			if (this.minSoCActive) {
-				return `Mindestladung bis ${this.socMarker}%`;
-			}
-			if (this.targetChargeEnabled) {
-				const targetDate = Date.parse(this.targetTime);
-				if (this.timerActive) {
-					return `Lädt ${this.fmtRelativeTime(targetDate)} bis ${this.socMarker}%`;
-				} else {
-					return `Geplant bis ${this.fmtAbsoluteDate(targetDate)} bis ${this.socMarker}%`;
-				}
-			}
-			return null;
+		targetSocUpdated: function (targetSoC) {
+			this.$emit("target-soc-updated", targetSoC);
+		},
+		targetTimeUpdated: function (targetTime) {
+			this.$emit("target-time-updated", targetTime);
 		},
 	},
-	mixins: [formatter],
+	mixins: [collector],
 };
 </script>
-<style scoped>
-.subline {
-	display: flex;
-	align-items: center;
-}
-.soc-bar {
-	position: relative;
-	height: 31px;
-}
-.progress {
-	height: 100%;
-	font-size: 0.875rem;
-}
-.progress-bar.bg-muted {
-	color: var(--white);
-}
-.soc-marker {
-	position: absolute;
-	top: -2px;
-	bottom: -2px;
-	width: 2px;
-}
-.bg-disabled {
-	background-color: var(--gray);
-}
-.bg-light {
-	color: var(--dark);
-}
-</style>
