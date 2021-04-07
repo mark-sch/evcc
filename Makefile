@@ -3,7 +3,7 @@
 .PHONY: prepare-image image-rootfs image-update
 
 COMMITS_AHEAD := $(shell bash git-branch-status master upstream/master | grep -oP  '(?<=ahead )[0-9]+')
-TAG_NAME := 2021.4.$(COMMITS_AHEAD)
+TAG_NAME := $(shell date +%Y).$(shell date +%-m).$(COMMITS_AHEAD)
 SHA := $(shell test -d .git && git rev-parse --short HEAD)
 VERSION := $(if $(TAG_NAME),$(TAG_NAME),$(SHA))
 BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
@@ -66,19 +66,19 @@ docker:
 
 publish-testing:
 	@echo Version: $(VERSION) $(BUILD_DATE)
-	docker login -u $DOCKER_USER -p $DOCKER_PASS
+	#sudo docker login -u $DOCKER_USER -p $DOCKER_PASS
 	seihon publish --dry-run=false --template docker/tmpl.Dockerfile --base-runtime-image alpine:$(ALPINE_VERSION) \
 	   --image-name $(DOCKER_IMAGE) -v "testing" --targets=$(TARGETS)
 
 publish-latest:
 	@echo Version: $(VERSION) $(BUILD_DATE)
-	docker login -u $DOCKER_USER -p $DOCKER_PASS
+	#sudo docker login -u $DOCKER_USER -p $DOCKER_PASS
 	seihon publish --dry-run=false --template docker/tmpl.Dockerfile --base-runtime-image alpine:$(ALPINE_VERSION) \
 	   --image-name $(DOCKER_IMAGE) -v "latest" --targets=$(TARGETS)
 
 publish-tag:
 	@echo Version: $(VERSION) $(BUILD_DATE)
-	docker login -u $DOCKER_USER -p $DOCKER_PASS
+	#sudo docker login -u $DOCKER_USER -p $DOCKER_PASS
 	seihon publish --dry-run=false --template docker/tmpl.Dockerfile --base-runtime-image alpine:$(ALPINE_VERSION) \
 	   --image-name $(DOCKER_IMAGE) -v "$(TAG_NAME)" --targets=$(TARGETS)
 

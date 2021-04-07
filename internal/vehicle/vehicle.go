@@ -61,6 +61,10 @@ func NewConfigurableFromConfig(other map[string]interface{}) (api.Vehicle, error
 		}
 	}
 
+	if cc.Status == nil {
+		return nil, fmt.Errorf("default vehicle config: %s required. This evcc version has a foreign/multiple vehicle detection feature and needs a \"Charge status\" from the vehicle.", "status")
+	}
+
 	getter, err := provider.NewFloatGetterFromConfig(cc.Charge)
 	if err != nil {
 		return nil, fmt.Errorf("charge: %w", err)
