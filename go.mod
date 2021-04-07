@@ -38,6 +38,7 @@ require (
 	github.com/korylprince/ipnetgen v1.0.0
 	github.com/lorenzodonini/ocpp-go v0.12.1-0.20201122163044-c8e61b6f96d2
 	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40
+	github.com/mark-sch/evcc-config v0.0.0-20210318175625-742b1378c795 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/muka/go-bluetooth v0.0.0-20201211051136-07f31c601d33
 	github.com/mxschmitt/golang-combinations v1.1.0

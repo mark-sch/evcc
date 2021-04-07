@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/andig/evcc-config/registry"
-	_ "github.com/andig/evcc-config/templates" // import all config templates
+	"github.com/mark-sch/evcc-config/registry"
+	_ "github.com/mark-sch/evcc-config/templates" // import all config templates
 	"gopkg.in/yaml.v3"
 )
 

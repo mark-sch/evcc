@@ -9,6 +9,7 @@ import (
 // SiteAPI is the external site API
 type SiteAPI interface {
 	Healthy() bool
+	GetHasSunny5Menu() bool
 	LoadPoints() []LoadPointAPI
 	GetResidualPower() float64
 	SetResidualPower(float64) error
@@ -16,6 +17,13 @@ type SiteAPI interface {
 	SetPrioritySoC(float64) error
 	GetMinSoC() int
 	SetMinSoC(int) error
+}
+
+// HasSunny5Menu
+func (site *Site) GetHasSunny5Menu() bool {
+	site.Lock()
+	defer site.Unlock()
+	return site.HasSunny5Menu
 }
 
 // GetPrioritySoC returns the PrioritySoC

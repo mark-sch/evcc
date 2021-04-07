@@ -22,6 +22,7 @@ func TestVehicles(t *testing.T) {
 		"missing credentials",    // Tesla
 		"invalid vehicle type: hyundai",
 		"invalid vehicle type: kia",
+		"cannot create type 'default': default vehicle config: status required. This evcc version has a foreign/multiple vehicle detection feature and needs a \"Charge status\" from the vehicle.",
 	}
 
 	for _, tmpl := range test.ConfigTemplates("vehicle") {

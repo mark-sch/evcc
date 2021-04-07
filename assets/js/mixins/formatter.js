@@ -72,6 +72,9 @@ export default {
         return `<a class="nav-item nav-link pb-1" href="../smartbox/login">Login</a>`;
       }
     },
+    hasSunny5Menu: function () {
+      return window.evcc.hasSunny5Menu == 'true';
+    },
     fmtAbsoluteDate: function (date) {
       return new Intl.DateTimeFormat("de-DE", {
         weekday: "short",

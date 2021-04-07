@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/core"
 	"github.com/mark-sch/evcc/util"
 	"github.com/mark-sch/evcc/util/test"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 )
 
 // Assets is the embedded assets file system
@@ -69,9 +69,10 @@ func indexHandler(site core.SiteAPI) http.HandlerFunc {
 		}
 
 		if err := t.Execute(w, map[string]interface{}{
-			"Version":    Version,
-			"Commit":     Commit,
-			"Configured": len(site.LoadPoints()),
+			"Version":       Version,
+			"Commit":        Commit,
+			"Configured":    len(site.LoadPoints()),
+			"HasSunny5Menu": site.GetHasSunny5Menu(),
 		}); err != nil {
 			log.ERROR.Println("httpd: failed to render main page:", err.Error())
 		}

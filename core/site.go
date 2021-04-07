@@ -35,6 +35,7 @@ type Site struct {
 	Voltage       float64      `mapstructure:"voltage"`       // Operating voltage. 230V for Germany.
 	ResidualPower float64      `mapstructure:"residualPower"` // PV meter only: household usage. Grid meter: household safety margin
 	MaxCurrent    float64      `mapstructure:"maxcurrent"`    // MaxCurrent limit accross all loadpoints
+	HasSunny5Menu bool         `mapstructure:"hasSunny5Menu"` // MaxCurrent limit accross all loadpoints
 	Meters        MetersConfig // Meter references
 	PrioritySoC   float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
 	count         int
