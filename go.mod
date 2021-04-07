@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
-	github.com/andig/evcc-config v0.0.0-20210315102139-3a3eedb62865
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/benbjohnson/clock v1.0.3
@@ -19,7 +18,6 @@ require (
 	github.com/godbus/dbus/v5 v5.0.3
 	github.com/gokrazy/updater v0.0.0-20210106211705-4d92b338dd24
 	github.com/golang/mock v1.4.4
-	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/google/uuid v1.1.5
 	github.com/gorilla/handlers v1.5.1
@@ -38,15 +36,13 @@ require (
 	github.com/korylprince/ipnetgen v1.0.0
 	github.com/lorenzodonini/ocpp-go v0.12.1-0.20201122163044-c8e61b6f96d2
 	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40
-	github.com/mark-sch/evcc-config v0.0.0-20210318175625-742b1378c795 // indirect
+	github.com/mark-sch/evcc-config v0.0.0-20210318175625-742b1378c795
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/muka/go-bluetooth v0.0.0-20201211051136-07f31c601d33
 	github.com/mxschmitt/golang-combinations v1.1.0
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/prometheus/client_golang v1.6.0
-	github.com/prometheus/common v0.10.0 // indirect
-	github.com/prometheus/procfs v0.2.0 // indirect
 	github.com/robertkrimen/otto v0.0.0-20200922221731-ef014fd054ac
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/jwalterweatherman v1.1.0
@@ -58,6 +54,5 @@ require (
 	golang.org/x/net v0.0.0-20201216054612-986b41b23924
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
 	golang.org/x/text v0.3.4
-	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )

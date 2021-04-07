@@ -111,6 +111,7 @@ chargers:
 
 site:
   title: Sunny5
+  hasSunny5Menu: true
   meters:
     grid: sunny5grid # grid meter
     pv: sunny5pv # pv meter
