@@ -389,7 +389,7 @@ func (site *Site) limitChargeCurrent(chargeCurrent float64, lp *LoadPoint) float
 	}
 	remainingChargeCurrent := siteChargeCurrentLimit - siteChargeCurrent + lp.chargeCurrent
 	//further checks due to loadpoint priority
-	if !lp.hasPriority && bolPriorityExists && lp.Mode == api.ModePV {
+	if !lp.hasPriority && !lp.minSocNotReached() && bolPriorityExists && lp.Mode == api.ModePV {
 		lp.log.DEBUG.Printf("Found another LP with prio")
 		if (lpPrio.charging() || lpPrio.connected()) && (lpPrio.targetSocNotReached() || lpPrio.minSocNotReached()) {
 			lp.log.DEBUG.Printf("Limit charge current to zero, prio LP is not finished yet")
