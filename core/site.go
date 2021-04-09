@@ -382,7 +382,7 @@ func (site *Site) limitChargeCurrent(chargeCurrent float64, lp *LoadPoint) float
 
 	for _, slp := range site.loadpoints {
 		siteChargeCurrent += slp.chargeCurrent
-		if slp.hasPriority {
+		if slp.hasPriority && (slp.status == api.StatusB || slp.status == api.StatusC) {
 			bolPriorityExists = true
 			lpPrio = slp
 		}
