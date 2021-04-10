@@ -195,6 +195,10 @@ func NewLoadPointFromConfig(log *util.Logger, cp configProvider, other map[strin
 	}
 	lp.ForeignEV = true
 
+	if lp.IntervalPV.Seconds() == 0 {
+		return nil, errors.New("Error: intervalPV value missing in loadpoint config.")
+	}
+
 	if lp.ChargerRef == "" {
 		return nil, errors.New("missing charger")
 	}
