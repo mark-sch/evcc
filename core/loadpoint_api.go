@@ -51,6 +51,7 @@ func (lp *LoadPoint) SetMode(mode api.ChargeMode) {
 	if lp.Mode != mode {
 		lp.log.INFO.Printf("set charge mode: %s", string(mode))
 		lp.pvDisableTimer = time.Time{}
+		lp.delayStatus = ""
 		lp.Mode = mode
 		lp.publish("mode", mode)
 

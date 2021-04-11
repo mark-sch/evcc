@@ -73,6 +73,7 @@ export default {
 		climater: String,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		delayStatus: String,
 		range: Number,
 	},
 	mixins: [formatter],

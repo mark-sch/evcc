@@ -178,6 +178,7 @@ export default {
 		// chargeDuration: Number,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		delayStatus: String,
 		climater: String,
 		range: Number,
 		chargeEstimate: Number,

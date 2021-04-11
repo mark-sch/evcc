@@ -27,3 +27,6 @@ label.btn {
 .bg-muted {
 	opacity: 0.25;
 }
+.border-primary {
+    border: 1px solid #007bff!important;
+}

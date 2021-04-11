@@ -44,7 +44,9 @@
 				icon="exclamation-circle"
 			></fa-icon>
 			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
+			<fa-icon v-else-if="hasDelayStatus" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
+			<fa-icon v-else-if="connectedButNotEnabled" class="text-muted mr-1" icon="plug"></fa-icon>
 			{{ markerLabel() }}
 		</small>
 	</div>
@@ -60,6 +62,7 @@ export default {
 		connected: Boolean,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		delayStatus: String,
 		socCharge: Number,
 		enabled: Boolean,
 		charging: Boolean,
@@ -116,6 +119,9 @@ export default {
 			if (this.minSoCActive) {
 				return "bg-danger";
 			}
+			if (this.connected && !this.enabled) {
+				return "bg-secondary border-primary";
+			}
 			if (this.enabled) {
 				return "bg-primary";
 			}
@@ -126,6 +132,12 @@ export default {
 		},
 		priorityActive: function () {
 			return this.hasPriority;
+		},
+		hasDelayStatus: function () {
+			return this.delayStatus.length !== 0
+		},
+		connectedButNotEnabled: function () {
+			return this.connected && !this.enabled && this.socCharge>0
 		},
 		targetChargeEnabled: function () {
 			return this.targetTime && this.timerSet;
@@ -146,9 +158,6 @@ export default {
 	methods: {
 		// not computed because it needs to update over time
 		markerLabel: function () {
-			if (this.priorityActive) {
-				return "Bevorzugt bei Überschussladung";
-			}
 			if (!this.connected) {
 				return null;
 			}
@@ -162,6 +171,15 @@ export default {
 				} else {
 					return `Geplant bis ${this.fmtAbsoluteDate(targetDate)} bis ${this.socMarker}%`;
 				}
+			}
+			if (this.hasDelayStatus) {
+				return this.delayStatus;
+			}
+			if (this.priorityActive) {
+				return "Bevorzugt bei Überschussladung";
+			}
+			if (this.connected && !this.enabled && this.socCharge>0) {
+				return "Verbunden";
 			}
 			return null;
 		},

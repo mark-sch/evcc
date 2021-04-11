@@ -105,6 +105,7 @@ type LoadPoint struct {
 	guardUpdated         time.Time // Charger enabled/disabled timestamp
 	socUpdated           time.Time // SoC updated timestamp (poll: connected)
 	hasPriority          bool
+	delayStatus          string
 
 	charger     api.Charger
 	chargeTimer api.ChargeTimer
@@ -234,6 +235,7 @@ func NewLoadPoint(log *util.Logger) *LoadPoint {
 		GuardDuration: 5 * time.Minute,
 		NextPVCheck:   false,
 		hasPriority:   false,
+		delayStatus:   "",
 	}
 
 	return lp
@@ -827,15 +829,20 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 			elapsed := lp.clock.Since(lp.pvEnableTimer)
 			if elapsed >= lp.Enable.Delay {
 				lp.pvEnableTimer = time.Time{}
+				lp.delayStatus = ""
 			} else {
 				if mode == api.ModePV && !lp.enabled {
 					lp.log.DEBUG.Printf("pv enable timer remaining: %v", (lp.Enable.Delay - elapsed).Round(time.Second))
+					lp.delayStatus = "Einschaltverzögerung aktiv: " + fmt.Sprint((lp.Enable.Delay - elapsed).Round(time.Second))
 				}
 			}
 		}
 	} else {
 		// reset timer
 		lp.pvEnableTimer = lp.clock.Now()
+		if mode == api.ModePV && !lp.enabled {
+			lp.delayStatus = "Nicht genügend Solarstrom"
+		}
 	}
 
 	// in MinPV mode return at least minCurrent
@@ -857,13 +864,16 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 			elapsed := lp.clock.Since(lp.pvDisableTimer)
 			if elapsed >= lp.Disable.Delay {
 				lp.log.DEBUG.Println("pv disable timer elapsed")
+				lp.delayStatus = ""
 				return 0
 			}
 
 			lp.log.DEBUG.Printf("pv disable timer remaining: %v", (lp.Disable.Delay - elapsed).Round(time.Second))
+			lp.delayStatus = "Abschaltverzögerung aktiv: " + fmt.Sprint((lp.Disable.Delay - elapsed).Round(time.Second))
 		} else {
 			// reset timer
 			lp.pvDisableTimer = lp.clock.Now()
+			lp.delayStatus = ""
 		}
 
 		return float64(lp.MinCurrent)
@@ -905,6 +915,35 @@ func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 		err = fmt.Errorf("updating charge meter: %v", err)
 		lp.log.ERROR.Printf("%v", err)
 	}
+}
+
+//publish enable and disable delay status
+func (lp *LoadPoint) publishDelayStatus() {
+	/*
+		if !lp.pvEnableTimer.IsZero() {
+			elapsed := lp.clock.Since(lp.pvEnableTimer)
+			if elapsed >= lp.Enable.Delay {
+				lp.delayStatus = ""
+			} else {
+				if lp.Mode == api.ModePV && !lp.enabled {
+					lp.delayStatus = "Einschaltverzögerung aktiv: " + fmt.Sprint((lp.Enable.Delay - elapsed).Round(time.Second))
+				}
+			}
+		}
+
+		if !lp.pvDisableTimer.IsZero() {
+			elapsed := lp.clock.Since(lp.pvDisableTimer)
+			if elapsed >= lp.Disable.Delay {
+				lp.delayStatus = ""
+			} else {
+				if lp.Mode == api.ModePV && lp.enabled {
+					lp.delayStatus = "Abschaltverzögerung aktiv: " + fmt.Sprint((lp.Disable.Delay - elapsed).Round(time.Second))
+				}
+			}
+		}
+	*/
+
+	lp.publish("delayStatus", lp.delayStatus)
 }
 
 // publish charged energy and duration
@@ -1010,6 +1049,7 @@ func (lp *LoadPoint) Update(sitePower float64) {
 
 	// update progress and soc before status is updated
 	lp.publishChargeProgress()
+	lp.publishDelayStatus()
 
 	// read and publish status
 	if err := lp.updateChargerStatus(true); err != nil {
