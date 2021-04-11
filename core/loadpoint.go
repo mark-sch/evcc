@@ -919,30 +919,6 @@ func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 
 //publish enable and disable delay status
 func (lp *LoadPoint) publishDelayStatus() {
-	/*
-		if !lp.pvEnableTimer.IsZero() {
-			elapsed := lp.clock.Since(lp.pvEnableTimer)
-			if elapsed >= lp.Enable.Delay {
-				lp.delayStatus = ""
-			} else {
-				if lp.Mode == api.ModePV && !lp.enabled {
-					lp.delayStatus = "Einschaltverzögerung aktiv: " + fmt.Sprint((lp.Enable.Delay - elapsed).Round(time.Second))
-				}
-			}
-		}
-
-		if !lp.pvDisableTimer.IsZero() {
-			elapsed := lp.clock.Since(lp.pvDisableTimer)
-			if elapsed >= lp.Disable.Delay {
-				lp.delayStatus = ""
-			} else {
-				if lp.Mode == api.ModePV && lp.enabled {
-					lp.delayStatus = "Abschaltverzögerung aktiv: " + fmt.Sprint((lp.Disable.Delay - elapsed).Round(time.Second))
-				}
-			}
-		}
-	*/
-
 	lp.publish("delayStatus", lp.delayStatus)
 }
 

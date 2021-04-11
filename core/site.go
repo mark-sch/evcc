@@ -85,6 +85,9 @@ func NewSiteFromConfig(
 	if site.Meters.GridMeterRef == "" {
 		return nil, errors.New("missing grid meter")
 	}
+	if site.MaxCurrent == 0 {
+		return nil, errors.New("missing maxCurrent config value")
+	}
 	if site.Meters.GridMeterRef != "" {
 		site.gridMeter = cp.Meter(site.Meters.GridMeterRef)
 	}
