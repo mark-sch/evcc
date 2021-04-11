@@ -175,6 +175,7 @@ export default {
 		// details
 		chargePower: Number,
 		chargedEnergy: Number,
+		prioritySoC: Number,
 		// chargeDuration: Number,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,

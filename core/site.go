@@ -317,6 +317,7 @@ func (site *Site) sitePower() (float64, error) {
 			// if battery is charging give it priority
 			if soc < site.PrioritySoC && batteryPower < 0 {
 				site.log.DEBUG.Printf("giving priority to home-battery at soc: %.0f", soc)
+				site.publish("prioritySoC", site.PrioritySoC)
 				batteryPower = 0
 			}
 		}

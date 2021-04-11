@@ -873,7 +873,6 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 		} else {
 			// reset timer
 			lp.pvDisableTimer = lp.clock.Now()
-			lp.delayStatus = ""
 		}
 
 		return float64(lp.MinCurrent)
@@ -890,6 +889,7 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 	// reset timer to disabled state
 	lp.log.DEBUG.Printf("pv timer reset")
 	lp.pvDisableTimer = time.Time{}
+	lp.delayStatus = ""
 
 	return targetCurrent
 }

@@ -43,6 +43,7 @@
 				class="text-muted mr-1"
 				icon="exclamation-circle"
 			></fa-icon>
+			<fa-icon v-else-if="hasHomeSoCPrio" class="text-muted mr-1" icon="exclamation-circle"></fa-icon>
 			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="hasDelayStatus" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
@@ -71,6 +72,9 @@ export default {
 		timerSet: Boolean,
 		targetTime: String,
 		targetSoC: Number,
+		prioritySoC: Number,
+		batterySoC: Number,
+		batteryPower: Number,
 	},
 	computed: {
 		socChargeDisplayWidth: function () {
@@ -136,6 +140,9 @@ export default {
 		hasDelayStatus: function () {
 			return this.delayStatus.length !== 0
 		},
+		hasHomeSoCPrio: function () {
+			return this.batterySoC < this.prioritySoC && this.batteryPower < 0;
+		},
 		connectedButNotEnabled: function () {
 			return this.connected && !this.enabled && this.socCharge>0
 		},
@@ -163,6 +170,9 @@ export default {
 			}
 			if (this.minSoCActive) {
 				return `Mindestladung bis ${this.socMarker}%`;
+			}
+			if (this.hasHomeSoCPrio) {
+				return `Hausspeicher Vorrang bis ${this.prioritySoC}%`;
 			}
 			if (this.targetChargeEnabled) {
 				const targetDate = Date.parse(this.targetTime);
