@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"math"
 
 	"github.com/mark-sch/evcc/api"
 )
@@ -47,7 +48,7 @@ func (site *Site) SetPrioritySoC(soc float64) error {
 
 	site.log.INFO.Println("set global priority soc:", soc)
 	site.PrioritySoC = soc
-	site.publish("prioritySoC", site.PrioritySoC)
+	site.publish("prioritySoC", math.Trunc(soc))
 
 	return nil
 }
@@ -66,7 +67,7 @@ func (site *Site) SetResidualPower(power float64) error {
 
 	site.log.INFO.Println("set residual power:", power)
 	site.ResidualPower = power
-	site.publish("residualPower", power)
+	site.publish("residualPower", math.Trunc(power))
 
 	return nil
 }

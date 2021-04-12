@@ -174,7 +174,7 @@ func (site *Site) DumpConfig() {
 		)
 
 		if ok {
-			site.publish("prioritySoC", site.PrioritySoC)
+			site.publish("prioritySoC", math.Trunc(site.PrioritySoC))
 		}
 	}
 
@@ -298,6 +298,7 @@ func (site *Site) updateMeters() error {
 // negative values mean grid: export, battery: charging
 func (site *Site) sitePower() (float64, error) {
 	if err := site.updateMeters(); err != nil {
+		fmt.Println(">>>>> Error updating meters", err)
 		return 0, err
 	}
 
@@ -309,15 +310,21 @@ func (site *Site) sitePower() (float64, error) {
 			site.log.ERROR.Printf("error updating battery soc: %v", err)
 		} else {
 			site.log.DEBUG.Printf("battery soc: %.0f%%", soc)
+			for _, slp := range site.loadpoints {
+				slp.publish("batterySoC", math.Trunc(soc))
+			}
 			site.publish("batterySoC", math.Trunc(soc))
 
 			site.Lock()
 			defer site.Unlock()
 
 			// if battery is charging give it priority
-			if soc < site.PrioritySoC && batteryPower < 0 {
+			if soc < site.PrioritySoC {
 				site.log.DEBUG.Printf("giving priority to home-battery at soc: %.0f", soc)
-				site.publish("prioritySoC", site.PrioritySoC)
+				for _, slp := range site.loadpoints {
+					slp.publish("prioritySoC", math.Trunc(site.PrioritySoC))
+				}
+				site.publish("prioritySoC", math.Trunc(site.PrioritySoC))
 				batteryPower = 0
 			}
 		}
@@ -362,7 +369,7 @@ func (site *Site) setLoadpointPriority(lp *LoadPoint) {
 func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
 	//determine if any loadpoint is requesting more current than actually using
 	for _, slp := range site.loadpoints {
-		if slp.chargeCurrent > float64(slp.MinCurrent) && lp.clock.Since(slp.chargeCurrentUpdated) > 15*time.Second {
+		if slp.chargeCurrent > float64(slp.MinCurrent) && lp.clock.Since(slp.chargeCurrentUpdated) > slp.Enable.Delay {
 			if curr, err := slp.chargeMeter.CurrentPower(); err == nil && curr+1 < slp.chargeCurrent {
 				var newCurrent float64
 				if curr+1 < float64(slp.MinCurrent) {

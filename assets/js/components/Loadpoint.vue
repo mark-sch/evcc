@@ -172,10 +172,12 @@ export default {
 		timerActive: Boolean,
 		targetTime: String,
 
+		batterySoC: Number,
+		prioritySoC: Number,
+
 		// details
 		chargePower: Number,
 		chargedEnergy: Number,
-		prioritySoC: Number,
 		// chargeDuration: Number,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,

@@ -70,7 +70,6 @@ export default {
 		chargeDuration: Number,
 		chargeEstimate: Number,
 		chargePower: Number,
-		prioritySoC: Number,
 		climater: String,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,

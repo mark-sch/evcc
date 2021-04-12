@@ -73,6 +73,7 @@ export default {
 		batteryPower: Number,
 		consumptionPower: Number,
 		batterySoC: Number,
+		prioritySoC: Number,
 	},
 	data: function () {
 		return {

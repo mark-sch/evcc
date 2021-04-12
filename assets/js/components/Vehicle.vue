@@ -73,6 +73,7 @@ export default {
 		targetTime: String,
 		targetSoC: Number,
 		prioritySoC: Number,
+		dummySoC: String,
 		batterySoC: Number,
 		batteryPower: Number,
 	},
@@ -141,7 +142,7 @@ export default {
 			return this.delayStatus.length !== 0
 		},
 		hasHomeSoCPrio: function () {
-			return this.batterySoC < this.prioritySoC && this.batteryPower < 0;
+			return this.batterySoC < this.prioritySoC;
 		},
 		connectedButNotEnabled: function () {
 			return this.connected && !this.enabled && this.socCharge>0
@@ -172,7 +173,7 @@ export default {
 				return `Mindestladung bis ${this.socMarker}%`;
 			}
 			if (this.hasHomeSoCPrio) {
-				return `Hausspeicher Vorrang bis ${this.prioritySoC}%`;
+				return `Hausspeicher hat Vorrang bis ${this.prioritySoC}%`;
 			}
 			if (this.targetChargeEnabled) {
 				const targetDate = Date.parse(this.targetTime);

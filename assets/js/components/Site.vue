@@ -51,6 +51,7 @@ export default {
 		batteryPower: Number,
 		consumptionPower: Number,
 		batterySoC: Number,
+		prioritySoC: Number,
 	},
 	components: { SiteDetails, Loadpoint },
 	mixins: [formatter, collector],
