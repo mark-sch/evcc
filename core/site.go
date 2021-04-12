@@ -310,10 +310,6 @@ func (site *Site) sitePower() (float64, error) {
 			site.log.ERROR.Printf("error updating battery soc: %v", err)
 		} else {
 			site.log.DEBUG.Printf("battery soc: %.0f%%", soc)
-			for _, slp := range site.loadpoints {
-				slp.publish("batterySoC", math.Trunc(soc))
-			}
-			site.publish("batterySoC", math.Trunc(soc))
 
 			site.Lock()
 			defer site.Unlock()
@@ -321,12 +317,15 @@ func (site *Site) sitePower() (float64, error) {
 			// if battery is charging give it priority
 			if soc < site.PrioritySoC {
 				site.log.DEBUG.Printf("giving priority to home-battery at soc: %.0f", soc)
-				for _, slp := range site.loadpoints {
-					slp.publish("prioritySoC", math.Trunc(site.PrioritySoC))
-				}
-				site.publish("prioritySoC", math.Trunc(site.PrioritySoC))
 				batteryPower = 0
 			}
+
+			for _, slp := range site.loadpoints {
+				slp.publish("prioritySoC", math.Trunc(site.PrioritySoC))
+				slp.publish("batterySoC", math.Trunc(soc))
+			}
+			site.publish("prioritySoC", math.Trunc(site.PrioritySoC))
+			site.publish("batterySoC", math.Trunc(soc))
 		}
 	}
 
