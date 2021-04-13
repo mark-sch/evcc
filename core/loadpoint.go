@@ -894,6 +894,46 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 	return targetCurrent
 }
 
+// check and adjust settings for ContactorWellness feature
+func (lp *LoadPoint) adjustForContactorWellness() {
+	if !lp.site.EnableContactorWellness {
+		return
+	}
+
+	var pvPower float64
+	if pv, ok := lp.site.pvMeter.(api.Meter); ok {
+		pvPower, _ = pv.CurrentPower()
+	} else {
+		return
+	}
+
+	if battery, ok := lp.site.batteryMeter.(api.Battery); ok {
+		soc, err := battery.SoC()
+		if err != nil {
+			lp.site.log.ERROR.Printf("error updating battery soc: %v", err)
+		} else {
+			lp.site.Lock()
+			defer lp.site.Unlock()
+
+			if soc <= 30 && pvPower > 50 {
+				lp.Disable.Delay = 10 * time.Minute
+			}
+			if soc > 30 && pvPower > 50 {
+				lp.Disable.Delay = 60 * time.Minute
+			}
+			if soc > 90 && pvPower > 50 {
+				lp.site.ResidualPower = 250
+			}
+			if soc < 70 && pvPower > 50 {
+				lp.site.ResidualPower = -250
+			}
+			if pvPower <= 50 {
+				lp.Disable.Delay = 10 * time.Minute
+			}
+		}
+	}
+}
+
 // updateChargeMeter updates and publishes single meter
 func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 	err := retry.Do(func() error {
@@ -1015,6 +1055,9 @@ func (lp *LoadPoint) publishSoCAndRange(force bool) {
 func (lp *LoadPoint) Update(sitePower float64) {
 	mode := lp.GetMode()
 	lp.publish("mode", mode)
+
+	// adjust settings for enableContactorWellness feature
+	lp.adjustForContactorWellness()
 
 	// read and publish meters first
 	lp.updateChargeMeter(true)

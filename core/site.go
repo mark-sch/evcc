@@ -31,14 +31,15 @@ type Site struct {
 	log *util.Logger
 
 	// configuration
-	Title         string       `mapstructure:"title"`         // UI title
-	Voltage       float64      `mapstructure:"voltage"`       // Operating voltage. 230V for Germany.
-	ResidualPower float64      `mapstructure:"residualPower"` // PV meter only: household usage. Grid meter: household safety margin
-	MaxCurrent    float64      `mapstructure:"maxcurrent"`    // MaxCurrent limit accross all loadpoints
-	HasSunny5Menu bool         `mapstructure:"hasSunny5Menu"` // MaxCurrent limit accross all loadpoints
-	Meters        MetersConfig // Meter references
-	PrioritySoC   float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
-	count         int
+	Title                   string       `mapstructure:"title"`                   // UI title
+	Voltage                 float64      `mapstructure:"voltage"`                 // Operating voltage. 230V for Germany.
+	ResidualPower           float64      `mapstructure:"residualPower"`           // PV meter only: household usage. Grid meter: household safety margin
+	MaxCurrent              float64      `mapstructure:"maxcurrent"`              // MaxCurrent limit accross all loadpoints
+	HasSunny5Menu           bool         `mapstructure:"hasSunny5Menu"`           // Enable the extended Sunny5 menu
+	EnableContactorWellness bool         `mapstructure:"enableContactorWellness"` // MaxCurrent limit accross all loadpoints
+	Meters                  MetersConfig // Meter references
+	PrioritySoC             float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
+	count                   int
 
 	// meters
 	gridMeter        api.Meter // Grid usage meter
@@ -100,6 +101,13 @@ func NewSiteFromConfig(
 	if site.Meters.ConsumptionMeterRef != "" {
 		site.consumptionMeter = cp.Meter(site.Meters.ConsumptionMeterRef)
 	}
+	if site.EnableContactorWellness && site.Meters.BatteryMeterRef == "" {
+		return nil, errors.New("for the enableContactorWellness feature a battery meter must be configured")
+	}
+	if site.EnableContactorWellness && site.Meters.PVMeterRef == "" {
+		return nil, errors.New("for the enableContactorWellness feature a pv meter must be configured")
+	}
+
 	site.count = 0
 
 	return site, nil
