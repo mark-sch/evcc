@@ -306,7 +306,6 @@ func (site *Site) updateMeters() error {
 // negative values mean grid: export, battery: charging
 func (site *Site) sitePower() (float64, error) {
 	if err := site.updateMeters(); err != nil {
-		fmt.Println(">>>>> Error updating meters", err)
 		return 0, err
 	}
 

@@ -160,6 +160,7 @@ export default {
 		remoteDisabledSource: String,
 		chargeDuration: Number,
 		charging: Boolean,
+		chargeCurrent: Number,
 
 		// vehicle
 		connected: Boolean,

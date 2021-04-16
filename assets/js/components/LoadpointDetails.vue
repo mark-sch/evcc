@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-6 col-md-3 mt-3">
 			<div class="mb-2 value">
-				Leistung
+				Leistung <small class="text-muted">(bei {{ fmtCurrent(chargeCurrent) }}A)</small>
 				<fa-icon
 					class="text-primary ml-1"
 					icon="temperature-low"
@@ -68,6 +68,7 @@ export default {
 	props: {
 		chargedEnergy: Number,
 		chargeDuration: Number,
+		chargeCurrent: Number,
 		chargeEstimate: Number,
 		chargePower: Number,
 		climater: String,

@@ -17,6 +17,17 @@ export default {
       val = Math.abs(val);
       return val >= this.fmtLimit ? this.round(val / 1e3, this.fmtDigits) : this.round(val, 0);
     },
+    fmtCurrent: function (val) {
+      if (val === undefined || val === null) {
+        return 0;
+      }
+      val = Math.abs(val);
+      if (val == this.round(val, 0)) {
+        return this.round(val, 0);
+      } else {
+        return this.round(val, 1);
+      }
+    },
     fmtUnit: function (val) {
       return Math.abs(val) >= this.fmtLimit ? "k" : "";
     },

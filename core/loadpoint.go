@@ -922,10 +922,10 @@ func (lp *LoadPoint) adjustForContactorWellness() {
 				lp.Disable.Delay = 60 * time.Minute
 			}
 			if soc > 90 && pvPower > 50 {
-				lp.site.ResidualPower = 250
+				lp.site.ResidualPower = -250 - lp.Disable.Threshold
 			}
 			if soc < 70 && pvPower > 50 {
-				lp.site.ResidualPower = -250
+				lp.site.ResidualPower = 250
 			}
 			if pvPower <= 50 {
 				lp.Disable.Delay = 10 * time.Minute
