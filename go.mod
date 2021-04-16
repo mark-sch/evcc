@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
-	github.com/andig/evcc v0.0.0-20210415203444-fc14a0eb208d
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/benbjohnson/clock v1.0.3

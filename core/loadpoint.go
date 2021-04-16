@@ -126,7 +126,6 @@ type LoadPoint struct {
 	pvDisableTimer time.Time        // PV disable timer
 	pvEnableTimer  time.Time        // PV enable timer
 	chargeCurrents []float64        // Phase currents
-	pvTimer        time.Time        // PV enabled/disable timer
 
 	socCharge      float64       // Vehicle SoC
 	chargedEnergy  float64       // Charged energy while connected in Wh

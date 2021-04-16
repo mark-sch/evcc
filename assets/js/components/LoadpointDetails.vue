@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col-6 col-md-3 mt-3">
 			<div class="mb-2 value">
-				Leistung <small class="text-muted">(bei {{ fmtCurrent(chargeCurrent) }}A)</small>
+				Leistung <small class="text-muted" v-if="chargeCurrent > 0">(bei {{ fmtCurrent(chargeCurrent) }}A)</small>
 				<fa-icon
 					class="text-primary ml-1"
 					icon="temperature-low"

@@ -6,7 +6,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ConfigTemplate is a configuration template from https://github.com/andig/evcc-config
+// ConfigTemplate is a configuration template from https://github.com/mark-sch/evcc-config
 type ConfigTemplate struct {
 	registry.Template
 	Config map[string]interface{}

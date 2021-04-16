@@ -23,7 +23,7 @@ export default {
       }
       val = Math.abs(val);
       if (val == this.round(val, 0)) {
-        return this.round(val, 0);
+        return val
       } else {
         return this.round(val, 1);
       }
