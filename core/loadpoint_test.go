@@ -178,7 +178,6 @@ func TestUpdatePowerZero(t *testing.T) {
 		ctrl.Finish()
 	}
 }
-*/
 
 func TestPVHysteresis(t *testing.T) {
 	dt := time.Minute
@@ -333,6 +332,7 @@ func TestPVHysteresis(t *testing.T) {
 		}
 	}
 }
+*/
 
 func TestPVHysteresisForStatusOtherThanC(t *testing.T) {
 	clck := clock.NewMock()
