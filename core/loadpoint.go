@@ -12,6 +12,7 @@ import (
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/core/soc"
 	"github.com/mark-sch/evcc/core/wrapper"
+	"github.com/mark-sch/evcc/provider"
 	"github.com/mark-sch/evcc/push"
 	"github.com/mark-sch/evcc/util"
 
@@ -124,6 +125,8 @@ type LoadPoint struct {
 	connectedTime  time.Time        // Time when vehicle was connected
 	pvDisableTimer time.Time        // PV disable timer
 	pvEnableTimer  time.Time        // PV enable timer
+	chargeCurrents []float64        // Phase currents
+	pvTimer        time.Time        // PV enabled/disable timer
 
 	socCharge      float64       // Vehicle SoC
 	chargedEnergy  float64       // Charged energy while connected in Wh
@@ -376,6 +379,8 @@ func (lp *LoadPoint) evVehicleConnectHandler() {
 			}
 		}
 	}
+	// flush all vahicles before updating state
+	provider.ResetCached()
 
 	lp.triggerEvent(evVehicleConnect)
 }
@@ -766,43 +771,14 @@ func (lp *LoadPoint) updateChargerStatus(bolLog bool) error {
 	return nil
 }
 
-// detectPhases uses MeterCurrent interface to count phases with current >=1A
-func (lp *LoadPoint) detectPhases() {
-	phaseMeter, ok := lp.chargeMeter.(api.MeterCurrent)
-	if !ok {
-		return
-	}
-
-	i1, i2, i3, err := phaseMeter.Currents()
-	if err != nil {
-		lp.log.ERROR.Printf("charge meter error: %v", err)
-		return
-	}
-
-	currents := []float64{i1, i2, i3}
-	lp.log.TRACE.Printf("charge currents: %.3gA", currents)
-	lp.publish("chargeCurrents", currents)
-
-	if lp.charging() {
-		var phases int64
-		for _, i := range currents {
-			if i >= minActiveCurrent {
-				phases++
-			}
-		}
-
-		if phases > 0 {
-			lp.Phases = phases
-			lp.log.DEBUG.Printf("detected phases: %dp %.3gA", lp.Phases, currents)
-
-			lp.publish("activePhases", lp.Phases)
-		}
-	}
-}
-
 // effectiveCurrent returns the currently effective charging current
 // it does not take measured currents into account
 func (lp *LoadPoint) effectiveCurrent() float64 {
+	// use measured L1 current
+	if lp.chargeCurrents != nil {
+		return lp.chargeCurrents[0]
+	}
+
 	if lp.status != api.StatusC {
 		return 0
 	}
@@ -934,8 +910,8 @@ func (lp *LoadPoint) adjustForContactorWellness() {
 	}
 }
 
-// updateChargeMeter updates and publishes single meter
-func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
+// updateChargePower updates charge meter power
+func (lp *LoadPoint) updateChargePower() {
 	err := retry.Do(func() error {
 		value, err := lp.chargeMeter.CurrentPower()
 		if err != nil {
@@ -943,9 +919,7 @@ func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 		}
 
 		lp.chargePower = value // update value if no error
-		if bolLog {
-			lp.log.DEBUG.Printf("charge power: %.0fW", value)
-		}
+		lp.log.DEBUG.Printf("charge power: %.0fW", value)
 		lp.publish("chargePower", value)
 
 		return nil
@@ -960,6 +934,41 @@ func (lp *LoadPoint) updateChargeMeter(bolLog bool) {
 //publish enable and disable delay status
 func (lp *LoadPoint) publishDelayStatus() {
 	lp.publish("delayStatus", lp.delayStatus)
+}
+
+// updateChargeCurrents uses MeterCurrent interface to count phases with current >=1A
+func (lp *LoadPoint) updateChargeCurrents() {
+	lp.chargeCurrents = nil
+	phaseMeter, ok := lp.chargeMeter.(api.MeterCurrent)
+	if !ok {
+		return
+	}
+
+	i1, i2, i3, err := phaseMeter.Currents()
+	if err != nil {
+		lp.log.ERROR.Printf("charge meter error: %v", err)
+		return
+	}
+
+	lp.chargeCurrents = []float64{i1, i2, i3}
+	lp.log.DEBUG.Printf("charge currents: %.3gA", lp.chargeCurrents)
+	lp.publish("chargeCurrents", lp.chargeCurrents)
+
+	if lp.charging() {
+		var phases int64
+		for _, i := range lp.chargeCurrents {
+			if i >= minActiveCurrent {
+				phases++
+			}
+		}
+
+		if phases > 0 {
+			lp.Phases = phases
+			lp.log.DEBUG.Printf("detected phases: %dp %.3gA", lp.Phases, lp.chargeCurrents)
+
+			lp.publish("activePhases", lp.Phases)
+		}
+	}
 }
 
 // publish charged energy and duration
@@ -1060,7 +1069,8 @@ func (lp *LoadPoint) Update(sitePower float64) {
 	lp.adjustForContactorWellness()
 
 	// read and publish meters first
-	lp.updateChargeMeter(true)
+	lp.updateChargePower()
+	lp.updateChargeCurrents()
 
 	// update ChargeRater here to make sure initial meter update is caught
 	lp.bus.Publish(evChargeCurrent, lp.chargeCurrent)
@@ -1088,9 +1098,6 @@ func (lp *LoadPoint) Update(sitePower float64) {
 
 	// sync settings with charger
 	lp.syncCharger()
-
-	// phase detection
-	lp.detectPhases()
 
 	// check if car connected and ready for charging
 	var err error

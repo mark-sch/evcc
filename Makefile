@@ -1,6 +1,7 @@
 .PHONY: default all clean install install-ui ui assets lint lint-ui test build test-release release
 .PHONY: docker publish-testing publish-latest publish-images
 .PHONY: prepare-image image-rootfs image-update
+.PHONY: soc server server-image
 
 COMMITS_AHEAD := $(shell bash git-branch-status master upstream/master | grep -oP  '(?<=ahead )[0-9]+')
 TAG_NAME := $(shell date +%Y).$(shell date +%-m).$(COMMITS_AHEAD)
@@ -106,3 +107,15 @@ image-rootfs:
 
 image-update:
 	gokr-packer -update yes $(IMAGE_OPTIONS)
+
+soc:
+	@echo Version: $(VERSION) $(BUILD_DATE)
+	go build -o evcc-soc $(BUILD_TAGS) $(BUILD_ARGS) github.com/mark-sch/evcc/soc/client
+
+server:
+	@echo Version: $(VERSION) $(BUILD_DATE)
+	go build -o soc-server $(BUILD_TAGS) $(BUILD_ARGS) github.com/mark-sch/evcc/soc/server
+
+publish-server:
+	docker build -f soc/Dockerfile --platform linux/amd64 -t mark-sch/evcc-cloud .
+	docker push mark-sch/evcc-cloud
