@@ -97,6 +97,10 @@ vehicles:
       if (state.battery > 100) state.battery = 100;
       state.battery;
   cache: 1s
+  status:
+    type: script
+    cmd: /bin/sh -c "echo C"
+    timeout: 3s # kill script after 3 seconds
 
 site:
   title: Demo
@@ -104,6 +108,7 @@ site:
     grid: grid
     pv: pv
     battery: battery
+  maxCurrent: 16
 
 loadpoints:
 - title: Carport
@@ -111,3 +116,4 @@ loadpoints:
   meters:
     charge: charge
   vehicle: demo
+  intervalPV: 30s
