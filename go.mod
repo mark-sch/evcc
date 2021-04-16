@@ -62,6 +62,5 @@ require (
 	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
-	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )

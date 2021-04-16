@@ -23,7 +23,7 @@ export default {
       }
       val = Math.abs(val);
       if (val == this.round(val, 0)) {
-        return val
+        return val;
       } else {
         return this.round(val, 1);
       }
@@ -84,7 +84,7 @@ export default {
       }
     },
     hasSunny5Menu: function () {
-      return window.evcc.hasSunny5Menu == 'true';
+      return window.evcc.hasSunny5Menu == "true";
     },
     fmtAbsoluteDate: function (date) {
       return new Intl.DateTimeFormat("de-DE", {

@@ -43,11 +43,19 @@
 				class="text-muted mr-1"
 				icon="exclamation-circle"
 			></fa-icon>
-			<fa-icon v-else-if="hasHomeSoCPrio" class="text-muted mr-1" icon="exclamation-circle"></fa-icon>
+			<fa-icon
+				v-else-if="hasHomeSoCPrio"
+				class="text-muted mr-1"
+				icon="exclamation-circle"
+			></fa-icon>
 			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="hasDelayStatus" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
-			<fa-icon v-else-if="connectedButNotEnabled" class="text-muted mr-1" icon="plug"></fa-icon>
+			<fa-icon
+				v-else-if="connectedButNotEnabled"
+				class="text-muted mr-1"
+				icon="plug"
+			></fa-icon>
 			{{ markerLabel() }}
 		</small>
 	</div>
@@ -139,13 +147,13 @@ export default {
 			return this.hasPriority;
 		},
 		hasDelayStatus: function () {
-			return this.delayStatus.length !== 0
+			return this.delayStatus.length !== 0;
 		},
 		hasHomeSoCPrio: function () {
 			return this.batterySoC < this.prioritySoC;
 		},
 		connectedButNotEnabled: function () {
-			return this.connected && !this.enabled && this.socCharge>0
+			return this.connected && !this.enabled && this.socCharge > 0;
 		},
 		targetChargeEnabled: function () {
 			return this.targetTime && this.timerSet;
@@ -189,7 +197,7 @@ export default {
 			if (this.priorityActive) {
 				return "Bevorzugt bei Überschussladung";
 			}
-			if (this.connected && !this.enabled && this.socCharge>0) {
+			if (this.connected && !this.enabled && this.socCharge > 0) {
 				return "Verbunden";
 			}
 			return null;

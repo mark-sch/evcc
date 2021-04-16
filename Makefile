@@ -117,5 +117,5 @@ server:
 	go build -o soc-server $(BUILD_TAGS) $(BUILD_ARGS) github.com/mark-sch/evcc/soc/server
 
 publish-server:
-	docker build -f soc/Dockerfile --platform linux/amd64 -t mark-sch/evcc-cloud .
-	docker push mark-sch/evcc-cloud
+	docker build -f soc/Dockerfile --platform linux/amd64 -t think5/evcc-cloud .
+	docker push think5/evcc-cloud
