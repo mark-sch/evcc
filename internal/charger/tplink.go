@@ -5,14 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"strings"
 
-	"github.com/andig/evcc/api"
-	"github.com/andig/evcc/internal/charger/tplink"
-	"github.com/andig/evcc/util"
 	"github.com/lunixbochs/struc"
+	"github.com/mark-sch/evcc/api"
+	"github.com/mark-sch/evcc/internal/charger/tplink"
+	"github.com/mark-sch/evcc/util"
 )
 
 // TPLink charger implementation
@@ -147,7 +146,6 @@ func (c *TPLink) CurrentPower() (float64, error) {
 
 // execCmd executes an TP-Link Smart Home Protocol command and provides the response
 func (c *TPLink) execCmd(cmd string) ([]byte, error) {
-
 	// encode command message
 	// encResult provides the encrypted plug command
 	encCommand := bytes.Buffer{}
@@ -180,11 +178,14 @@ func (c *TPLink) execCmd(cmd string) ([]byte, error) {
 	}
 
 	// encResponse receives the encrypted plug response
-	var encResponse []byte
-	encResponse, err = ioutil.ReadAll(conn)
+	b := make([]byte, 2048)
+
+	count, err := conn.Read(b)
 	if err != nil {
 		return nil, err
 	}
+
+	encResponse := b[:count]
 
 	// decode response message
 	// decResponse provides the decrypted smart plug response
@@ -195,6 +196,5 @@ func (c *TPLink) execCmd(cmd string) ([]byte, error) {
 		dkey = encResponse[i]
 		decResponse.WriteByte(dec)
 	}
-
 	return decResponse.Bytes(), nil
 }
