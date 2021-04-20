@@ -41,7 +41,7 @@ func TestUnmarshalTPLinkSystemResponses(t *testing.T) {
 		t.Error("GetSysinfo.Feature")
 	}
 
-	// Test emeter response
+	// Test 1st emeter generation response
 	var emeresp EmeterResponse
 	jsonstr = `{"emeter":{"get_realtime":{"current":0.033759,"voltage":234.824322,"power":3.121391,"total":0.015000,"err_code":0}}}`
 	if err := json.Unmarshal([]byte(jsonstr), &emeresp); err != nil {
@@ -60,6 +60,28 @@ func TestUnmarshalTPLinkSystemResponses(t *testing.T) {
 		t.Error("GetRealtime.Total")
 	}
 	if emeresp.Emeter.GetRealtime.ErrCode != 0 {
+		t.Error("GetRealtime.ErrCode")
+	}
+
+	// Test 2nd emeter generation response
+	var emeresp2 EmeterResponse
+	jsonstr = ` {"emeter":{"get_realtime":{"voltage_mv":237119,"current_ma":218,"power_mw":31259,"total_wh":107,"err_code":0}}}`
+	if err := json.Unmarshal([]byte(jsonstr), &emeresp2); err != nil {
+		t.Error(err)
+	}
+	if emeresp2.Emeter.GetRealtime.CurrentMa != 218 {
+		t.Error("GetRealtime.CurrentMa")
+	}
+	if emeresp2.Emeter.GetRealtime.VoltageMv != 237119 {
+		t.Error("GetRealtime.VoltageMv")
+	}
+	if emeresp2.Emeter.GetRealtime.PowerMw != 31259 {
+		t.Error("GetRealtime.PowerMw")
+	}
+	if emeresp2.Emeter.GetRealtime.TotalWh != 107 {
+		t.Error("GetRealtime.TotalWh")
+	}
+	if emeresp2.Emeter.GetRealtime.ErrCode != 0 {
 		t.Error("GetRealtime.ErrCode")
 	}
 

@@ -45,7 +45,7 @@ func NewTPLinkFromConfig(other map[string]interface{}) (api.Charger, error) {
 // NewTPLink creates TP-Link charger
 func NewTPLink(uri string, standbypower float64) (*TPLink, error) {
 	c := &TPLink{
-		uri:          strings.TrimRight(uri, "/"),
+		uri:          strings.TrimRight(uri, "/") + ":9999",
 		standbypower: standbypower,
 	}
 	return c, nil
@@ -129,12 +129,14 @@ func (c *TPLink) CurrentPower() (float64, error) {
 	if err := json.Unmarshal(emeResp, &emeterResponse); err != nil {
 		return 0, err
 	}
-
 	if err := emeterResponse.Emeter.GetRealtime.ErrCode; err != 0 {
 		return 0, fmt.Errorf("get_realtime error %d", err)
 	}
 
-	power := emeterResponse.Emeter.GetRealtime.Power / 1000
+	power := emeterResponse.Emeter.GetRealtime.PowerMw / 1000
+	if power == 0 {
+		power = emeterResponse.Emeter.GetRealtime.Power
+	}
 
 	// ignore standby power
 	if power < c.standbypower {
@@ -158,7 +160,7 @@ func (c *TPLink) execCmd(cmd string) ([]byte, error) {
 	binary.BigEndian.PutUint32(buf.Bytes(), uint32(buf.Len()-4))
 
 	// open connection via TP-Link Smart Home Protocol port 9999
-	conn, err := net.Dial("tcp", c.uri+":9999")
+	conn, err := net.Dial("tcp", c.uri)
 	if err != nil {
 		return nil, err
 	}
