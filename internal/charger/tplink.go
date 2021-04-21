@@ -8,10 +8,16 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/mark-sch/evcc/api"
 	"github.com/mark-sch/evcc/internal/charger/tplink"
 	"github.com/mark-sch/evcc/util"
+)
+
+var (
+	lastOffsetReset int     = 0
+	chargedOffset   float64 = 0
 )
 
 // TPLink charger implementation
@@ -109,7 +115,7 @@ func (c *TPLink) Status() (api.ChargeStatus, error) {
 	power, err := c.CurrentPower()
 
 	switch {
-	case power > 0:
+	case power > c.standbypower:
 		return api.StatusC, err
 	default:
 		return api.StatusB, err
@@ -138,12 +144,61 @@ func (c *TPLink) CurrentPower() (float64, error) {
 		power = emeterResponse.Emeter.GetRealtime.Power
 	}
 
-	// ignore standby power
-	if power < c.standbypower {
-		power = 0
+	return power, err
+}
+
+// TotalEnergy implements the MeterEnergy interface
+func (c *TPLink) TotalEnergy() (float64, error) {
+	emeResp, err := c.execCmd(`{"emeter":{"get_realtime":null}}`)
+	if err != nil {
+		return 0, err
 	}
 
-	return power, err
+	var emeterResponse tplink.EmeterResponse
+	if err := json.Unmarshal(emeResp, &emeterResponse); err != nil {
+		return 0, err
+	}
+	if err := emeterResponse.Emeter.GetRealtime.ErrCode; err != 0 {
+		return 0, fmt.Errorf("get_realtime error %d", err)
+	}
+
+	total := emeterResponse.Emeter.GetRealtime.TotalWh / 1000
+	if total == 0 {
+		total = emeterResponse.Emeter.GetRealtime.Total
+	}
+
+	return total, err
+}
+
+var _ api.ChargeRater = (*Keba)(nil)
+
+// ChargedEnergy implements the ChargeRater interface
+func (c *TPLink) ChargedEnergy() (float64, error) {
+	emeResp, err := c.execCmd(`{"emeter":{"get_realtime":null}}`)
+	if err != nil {
+		return 0, err
+	}
+
+	var emeterResponse tplink.EmeterResponse
+	if err := json.Unmarshal(emeResp, &emeterResponse); err != nil {
+		return 0, err
+	}
+	if err := emeterResponse.Emeter.GetRealtime.ErrCode; err != 0 {
+		return 0, fmt.Errorf("get_realtime error %d", err)
+	}
+
+	total := emeterResponse.Emeter.GetRealtime.TotalWh / 1000
+	if total == 0 {
+		total = emeterResponse.Emeter.GetRealtime.Total
+	}
+
+	today := time.Now().Day()
+	if today != lastOffsetReset {
+		chargedOffset = total
+		lastOffsetReset = today
+	}
+
+	return total - chargedOffset, err
 }
 
 // execCmd executes an TP-Link Smart Home Protocol command and provides the response
