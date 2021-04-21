@@ -196,6 +196,7 @@ func NewLoadPointFromConfig(log *util.Logger, cp configProvider, other map[strin
 	// single vehicle
 	if lp.VehicleRef != "" {
 		vehicle := cp.Vehicle(lp.VehicleRef)
+		lp.log.DEBUG.Printf("Adding vehicle to loadpoint: %s", vehicle.Title())
 		lp.vehicles = append(lp.vehicles, vehicle)
 	}
 	lp.ForeignEV = true
