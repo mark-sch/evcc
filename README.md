@@ -1,35 +1,34 @@
-# evcc
+# Sunny5 evcc
 
 [![Build Status](https://github.com/mark-sch/evcc/workflows/Build/badge.svg)](https://github.com/mark-sch/evcc/actions?query=workflow%3ABuild)
 [![Code Quality](https://goreportcard.com/badge/github.com/mark-sch/evcc)](https://goreportcard.com/report/github.com/mark-sch/evcc)
 [![Latest Version](https://img.shields.io/github/v/tag/mark-sch/evcc.svg)](https://github.com/mark-sch/evcc/releases)
 [![Pulls from Docker Hub](https://img.shields.io/docker/pulls/think5/evcc.svg)](https://hub.docker.com/r/think5/evcc)
 
-EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage. This charge controller is Open Source, derived from andig/evcc, with enhanced features for load management and load limitation on multiple loadpoints.
+EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage. This charge controller is Open Source, derived from andig/evcc, with enhancements and features for load management and load limitation on multiple loadpoints.
 
-This project is part of Sunny5 Smartbox, a complete hard- and software solution for smarthome and wallbox management based on open standards.
+This project is part of Sunny5 Smartbox, a complete hard- and software solution running locally for smarthome and wallbox management, ready to go with remote access and based on open standards.
 
 | Sunny5 Smartbox in action with two loadpoints |
 | ------------------------ |
 | ![EV charging with solar power](https://raw.githubusercontent.com/mark-sch/evcc/master/docs/screenshot.png) |
 
-| Mobile VIS view | Mobile EVCC view |
+| Mobile ioBroker view | Mobile EVCC view |
 | ------------------------ | --------------------------------- |
 | ![Sunny5 Smartbox comes with ioBroker](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_vis.jpeg?raw=true) | ![Every Smartbox has remote access capabilities](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_evcc.jpeg?raw=true) |
 
-## Features
+## evcc Features
 
-- simple and clean user interface
-- multiple [chargers](#charger): Wallbe, Phoenix (includes ESL Walli), go-eCharger, NRGkick (direct Bluetooth or via Connect device), SimpleEVSE, EVSEWifi, KEBA/BMW, openWB, Mobile Charger Connect, Fritz!DECT outlets, Tasmota outlets and any other charger using scripting
-- multiple [meters](#meter): ModBus (Eastron SDM, MPM3PM, SBC ALE3 and many more), Discovergy (using HTTP plugin), SMA Sunny Home Manager and Energy Meter, KOSTAL Smart Energy Meter (KSEM, EMxx), any Sunspec-compatible inverter or home battery devices (Fronius, SMA, SolarEdge, KOSTAL, STECA, E3DC, ...), Tesla PowerWall
-- wide support of vendor-specific [vehicles](#vehicle) interfaces (remote charge, battery and preconditioning status): Audi, BMW, Ford, Hyundai, Kia, Nissan, Niu, Porsche, Renault, Seat, Skoda, Tesla, Volkswagen, Volvo and any other connected vehicle using scripting
+- Responsive user interface, for mobile, tablet and large screens
+- Wide range of hardware support
+  - [chargers](#charger): e.g. Wallbe, go-eCharger, SimpleEVSE, EVSEWifi, KEBA/BMW, openWB, Fritz!DECT, Tasmota  and TP-Link outlets and many more ...
+  - [meters](#meter): ModBus (Eastron SDM, MPM3PM, SBC ALE3 and many more), Discovergy, SMA Sunny Home Manager, KOSTAL Smart Energy Meter (KSEM, EMxx), any Sunspec-compatible inverter or home battery devices (Fronius, SMA, SolarEdge, KOSTAL, STECA, E3DC, ...), Tesla PowerWall
+  - electric [vehicles](#vehicle) communication interfaces: Audi, BMW, Ford, Hyundai, Kia, Mercedes, Nissan, Niu, Porsche, Renault, Seat, Skoda, Tesla, Volkswagen, Volvo and growing
 - [plugins](#plugins) for integrating with hardware devices and home automation: Modbus (meters and grid inverters), HTTP, MQTT, Javascript, WebSockets and shell scripts
 - status notifications using [Telegram](https://telegram.org) and [PushOver](https://pushover.net)
 - logging using [InfluxDB](https://www.influxdata.com) and [Grafana](https://grafana.com/grafana/)
 - granular charge power control down to 25W steps with supported chargers
 - REST API
-
-![Screenshot](docs/screenshot.png)
 
 ## Index <!-- omit in toc -->
 
@@ -60,7 +59,7 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 ## Getting started
 
 1. Install EVCC. For details see [installation](#installation).
-2. Copy the default configuration file `evcc.dist.yaml` to `evcc.yaml` and open for editing.
+2. Copy the default configuration file `evcc.sunny5.yaml` to `evcc.yaml` and open for editing.
     We recommend to use an editor like [VS Code](https://code.visualstudio.com) with the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) for syntax highlighting.
 3. To create a minimal setup you need a [meter](#meter) (either grid meter or pv generation meter) and a supported [charger](#charger). Many PV inverters contain meters that can be used here.
 4. Configure both meter(s) and charger by:
@@ -69,7 +68,7 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
     - add a `name` attribute than can later be referred to
     - add configuration details depending on `type`
 
-    See `evcc.dist.yaml` for examples.
+    See `evcc.sunny5.yaml` for examples.
 
 5. Configure an optional vehicle by choosing the appropriate `type` and adding a `name` attribute than can later be referred to.
 6. Test your meter, charger and optional vehicle configuration by running
@@ -95,10 +94,16 @@ Use the following `systemd` unit description to configure EVCC as service (put i
 ```none
 [Unit]
 Description=evcc
-After=syslog.target network.target
+Wants=network-online.target
+After=syslog.target network.target network-online.target mosquitto.service
 [Service]
-ExecStart=/usr/local/bin/evcc --log error
+ExecStartPre=rm /tmp/evcc -f
+ExecStart=/home/sunny5/git/evcc/evcc
+WorkingDirectory=/home/sunny5/git/evcc
 Restart=always
+User=sunny5
+RestartSec=1000ms
+TimeoutSec=180
 [Install]
 WantedBy=multi-user.target
 ```
@@ -106,19 +111,19 @@ WantedBy=multi-user.target
 EVCC can also be run using Docker. Here's and example with given config file and UI on port 7070:
 
 ```sh
-docker run -v $(pwd)/evcc.dist.yaml:/etc/evcc.yaml -p 7070:7070 andig/evcc -h
+docker run -v $(pwd)/evcc.sunny5.yaml:/etc/evcc.yaml -p 7070:7070 think5/evcc -h
 ```
 
 If using Docker with a meter or charger that requires UDP like KEBA, make sure that the Docker container can receive UDP messages on the relevant ports (`:7090` for KEBA):
 
 ```sh
-docker run -p 7070:7070 -p 7090:7090/udp andig/evcc ...
+docker run -p 7070:7070 -p 7090:7090/udp think5/evcc ...
 ```
 
 When using Docker with a device that requires multicast UDP like SMA, make sure that the Docker container uses the `network_mode: host` configuration:
 
 ```sh
-docker run --network host andig/evcc ...
+docker run --network host think5/evcc ...
 ```
 
 To build EVCC from source, [Go](2) 1.16 and [Node](3) 14 are required:
@@ -194,6 +199,7 @@ Charger is responsible for handling EV state and adjusting charge current. Avail
 - `warp`: Tinkerforge Warp/ Warp Pro charger
 - `fritzdect`: pseudo charger using Fritz!DECT 200/210 outlets
 - `tasmota`: pseudo charger using Tasmota outlets
+- `tplink`: pseudo charger using TP-Link HS110 outlets
 - `default`: default charger implementation using configurable [plugins](#plugins) for integrating any type of charger
 
 Configuration examples are documented at [andig/evcc-config#chargers](https://github.com/mark-sch/evcc-config#chargers)
