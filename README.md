@@ -2,10 +2,20 @@
 
 [![Build Status](https://github.com/mark-sch/evcc/workflows/Build/badge.svg)](https://github.com/mark-sch/evcc/actions?query=workflow%3ABuild)
 [![Code Quality](https://goreportcard.com/badge/github.com/mark-sch/evcc)](https://goreportcard.com/report/github.com/mark-sch/evcc)
-[![Latest Version](https://img.shields.io/github/v/tag/andig/evcc.svg)](https://github.com/mark-sch/evcc/releases)
-[![Pulls from Docker Hub](https://img.shields.io/docker/pulls/andig/evcc.svg)](https://hub.docker.com/r/andig/evcc)
+[![Latest Version](https://img.shields.io/github/v/tag/mark-sch/evcc.svg)](https://github.com/mark-sch/evcc/releases)
+[![Pulls from Docker Hub](https://img.shields.io/docker/pulls/think5/evcc.svg)](https://hub.docker.com/r/think5/evcc)
 
-<img src="docs/logo.png" style="float: right" align="left" width="300" />EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage.<br/>
+EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage. This charge controller is Open Source, derived from andig/evcc, with enhanced features for load management and load limitation on multiple loadpoints.
+
+This project is part of Sunny5 Smartbox, a complete hard- and software solution for smarthome and wallbox management based on open standards.
+
+| Sunny5 Smartbox in action with two loadpoints |
+| ------------------------ |
+| ![EV charging with solar power](https://raw.githubusercontent.com/mark-sch/evcc/master/docs/screenshot.png) |
+
+| Mobile VIS view | Mobile EVCC view |
+| ------------------------ | --------------------------------- |
+| ![Sunny5 Smartbox comes with ioBroker](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_vis.jpeg?raw=true) | ![Every Smartbox has remote access capabilities](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_evcc.jpeg?raw=true) |
 
 ## Features
 
