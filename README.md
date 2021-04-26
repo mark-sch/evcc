@@ -17,6 +17,18 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 | ------------------------ | --------------------------------- |
 | ![Sunny5 Smartbox comes with ioBroker](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_vis.jpeg?raw=true) | ![Every Smartbox has remote access capabilities](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_evcc.jpeg?raw=true) |
 
+## What's new?
+- Load management with multiple loadpoints: e.g. press pv mode twice to set a charge priority
+- Load limitation feature on site level: e.g. multiple loadpoints can share a single 16A grid connection.
+- New contactor wellness feature. Purpose: Minimize contactor switching on ev batteries by avoiding unnecessary charger turn offs on low pv power. This feature also avoids that many ev's are falling asleep after a certain amount of turn on/offs. A turn off delay will by dynamically calculated based on the houshold battery soc.
+- Show more details of the system state in the Gui: "Home battery has priority over ev", "Enable/disable delay of charging process", "Immediate charging to minSoc treshold" and so on.
+- Backend enhancement to support login and user permissions (when using Sunny5 Smartbox)
+- Extended MQTT getter/setter for smarthome integration
+- Gui: window toast message throttling
+- Show charging current in GUI
+- Destinguish between foreign and configured vehicles, e.g. switch foreign ev's after connect to mode stop and switch to pv mode when the own vehicle is connected.
+- Measure and display houshold consumption metering in evcc GUI
+
 ## evcc Features
 
 - Responsive user interface, for mobile, tablet and large screens
@@ -25,10 +37,10 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
   - [meters](#meter): ModBus (Eastron SDM, MPM3PM, SBC ALE3 and many more), Discovergy, SMA Sunny Home Manager, KOSTAL Smart Energy Meter (KSEM, EMxx), any Sunspec-compatible inverter or home battery devices (Fronius, SMA, SolarEdge, KOSTAL, STECA, E3DC, ...), Tesla PowerWall
   - electric [vehicles](#vehicle) communication interfaces: Audi, BMW, Ford, Hyundai, Kia, Mercedes, Nissan, Niu, Porsche, Renault, Seat, Skoda, Tesla, Volkswagen, Volvo and growing
 - [plugins](#plugins) for integrating with hardware devices and home automation: Modbus (meters and grid inverters), HTTP, MQTT, Javascript, WebSockets and shell scripts
-- status notifications using [Telegram](https://telegram.org) and [PushOver](https://pushover.net)
-- logging using [InfluxDB](https://www.influxdata.com) and [Grafana](https://grafana.com/grafana/)
-- granular charge power control down to 25W steps with supported chargers
-- REST API
+- Status notifications using [Telegram](https://telegram.org) or [PushOver](https://pushover.net) messaging
+- Logging using [InfluxDB](https://www.influxdata.com) and [Grafana](https://grafana.com/grafana/)
+- Granular charge power control down to 25W steps with supported chargers
+- Exposes data and functionality by REST API and MQTT
 
 ## Index <!-- omit in toc -->
 
