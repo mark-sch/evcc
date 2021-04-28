@@ -24,9 +24,10 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 - Show more details of the system state in the Gui: "Home battery has priority over ev", "Enable/disable delay of charging process", "Immediate charging to minSoc treshold" and so on.
 - Backend enhancement to support login and user permissions (when using Sunny5 Smartbox)
 - Extended MQTT getter/setter for smarthome integration
+- Gui: Release Tesla charge port when stopping the charge process in the gui - if a configured Tesla is connected and detected
 - Gui: window toast message throttling
 - Show charging current in GUI
-- Destinguish between foreign and configured vehicles, e.g. switch foreign ev's after connect to mode stop and switch to pv mode when the own vehicle is connected.
+- Distinguish between foreign and configured vehicles, e.g. switch foreign ev's after connect to mode stop and switch to pv mode when the own vehicle is connected.
 - Measure and display houshold consumption metering in evcc GUI
 
 ## evcc Features
@@ -35,7 +36,7 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 - Wide range of hardware support
   - [chargers](#charger): e.g. Wallbe, go-eCharger, SimpleEVSE, EVSEWifi, KEBA/BMW, openWB, Fritz!DECT, Tasmota  and TP-Link outlets and many more ...
   - [meters](#meter): ModBus (Eastron SDM, MPM3PM, SBC ALE3 and many more), Discovergy, SMA Sunny Home Manager, KOSTAL Smart Energy Meter (KSEM, EMxx), any Sunspec-compatible inverter or home battery devices (Fronius, SMA, SolarEdge, KOSTAL, STECA, E3DC, ...), Tesla PowerWall
-  - electric [vehicles](#vehicle) communication interfaces: Audi, BMW, Ford, Hyundai, Kia, Mercedes, Nissan, Niu, Porsche, Renault, Seat, Skoda, Tesla, Volkswagen, Volvo and growing
+  - electric [vehicles](#vehicle) communication interfaces: Audi, BMW, Ford, Hyundai, Kia, Nissan, Niu, Porsche, Renault, Seat, Skoda, Tesla, Volkswagen, Volvo and growing
 - [plugins](#plugins) for integrating with hardware devices and home automation: Modbus (meters and grid inverters), HTTP, MQTT, Javascript, WebSockets and shell scripts
 - Status notifications using [Telegram](https://telegram.org) or [PushOver](https://pushover.net) messaging
 - Logging using [InfluxDB](https://www.influxdata.com) and [Grafana](https://grafana.com/grafana/)
