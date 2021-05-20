@@ -58,6 +58,10 @@ func newPSA(log *util.Logger, brand, realm string, other map[string]interface{})
 		return nil, err
 	}
 
+	if cc.ClientID == "" || cc.ClientSecret == "" {
+		return nil, errors.New("missing client id and secret (see https://github.com/flobz/psa_car_controller)")
+	}
+
 	v := &PSA{
 		embed: &embed{cc.Title, cc.Capacity},
 	}
