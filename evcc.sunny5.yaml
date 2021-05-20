@@ -117,16 +117,9 @@ site:
     pv: sunny5pv # pv meter
     battery: sunny5battery # battery meter
     consumption: sunny5consumption # consumption meter
-  prioritySoC: 35 # give home battery priority up to this soc (0 to disable)
+  prioritySoC: 25 # give home battery priority up to this soc (0 to disable)
   residualPower: 250 # household safety margin (still charge home battery while ev charging)
   maxCurrent: 16 # max. current accross all loadpoints
-  # The contactors of EV batteries have a limited switch lifetime. PV charging on mixed, cloudy days 
-  # has the side effect of many charger on/off switching cycles. Car manufactures also limit the amount 
-  # of these switches during a charge cycle and let the vehicle fall asleep (e.g. VW after 5-10 times) 
-  # afterwards. enableContactorWellness optimizes the loadpoints.disable.delay and site.residualPower 
-  # parameters during evcc runtime to minimize charger switch offs by using the home battery within a 
-  # soc range between 40% and 100% (briding cloud charge gaps).
-  enableContactorWellness: true
 
 loadpoints:
 - title: Ladepunkt # ui display name
@@ -164,7 +157,7 @@ loadpoints:
     delay: 3m # threshold must be exceeded for this long
     threshold: -1500 # minimum export power (W). If zero, export must exceeds minimum charge power to enable
   disable: # pv mode disable behavior
-    delay: 10m # threshold must be exceeded for this long
+    delay: 3m # threshold must be exceeded for this long
     threshold: 200 # maximum import power (W)
   guardduration: 5m # switch charger contactor not more often than this (default 10m)
   mincurrent: 6 # minimum charge current (default 6A)
