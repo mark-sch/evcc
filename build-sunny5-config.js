@@ -54,7 +54,7 @@ subnetPinger.on('ping:end', () => {
     console.log('Not all devices found. Performing second attempt...')
     discover();
   } else {
-    console.log('Unable to find all devices. Check hardware and make sure that your Wallbox, Sunny5-Hybrid-Inverter and Sunny5-Broker are in the same network subnet.')
+    console.log('Unable to find all devices. Check hardware and make sure that your Wallbox, Sunny5-Hybrid-Inverter and Sunny5-Smartbox device are in the same network subnet.')
     process.exit(3);
   }
 
@@ -117,7 +117,7 @@ async function discover() {
 function main() {
   console.log('');
   console.log('****************************************************');
-  console.log('*** Sunny5-Broker config file builder, v1.2      ***');
+  console.log('*** Sunny5-Smartbox config file builder, v1.3    ***');
   console.log('****************************************************');
   console.log('');
 
