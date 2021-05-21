@@ -89,7 +89,13 @@
 									class="btn btn-primary"
 									v-else
 								>
-									Download
+									Version
+								</a>
+								<a
+									:href="installUrl()"
+									class="btn btn-primary"
+								>
+									Update
 								</a>
 							</div>
 						</div>
@@ -139,6 +145,9 @@ export default {
 		},
 		releaseNotesUrl: function (version) {
 			return `https://github.com/mark-sch/evcc/releases/tag/${version}`;
+		},
+		installUrl: function () {
+			return `/smartbox/terminal?type=evccupdate`;
 		},
 	},
 	computed: {
