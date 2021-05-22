@@ -79,13 +79,6 @@ func NewSiteFromConfig(
 	Voltage = site.Voltage
 	site.loadpoints = loadpoints
 
-	// configure meter from references
-	// if site.Meters.PVMeterRef == "" && site.Meters.GridMeterRef == "" {
-	// 	nil, errors.New("missing either pv or grid meter")
-	// }
-	if site.Meters.GridMeterRef == "" {
-		return nil, errors.New("missing grid meter")
-	}
 	if site.MaxCurrent == 0 {
 		return nil, errors.New("missing maxCurrent config value")
 	}
@@ -109,6 +102,11 @@ func NewSiteFromConfig(
 	}
 
 	site.count = 0
+
+	// configure meter from references
+	if site.gridMeter == nil && site.pvMeter == nil {
+		return nil, errors.New("missing either grid or pv meter")
+	}
 
 	return site, nil
 }
@@ -257,6 +255,15 @@ func (site *Site) updateMeter(name string, meter api.Meter, power *float64) erro
 	return nil
 }
 
+func (site *Site) updateMeter2(name string, value float64, power *float64) error {
+	*power = value // update value if no error
+
+	site.log.DEBUG.Printf("%s power: %.0fW", name, *power)
+	site.publish(name+"Power", *power)
+
+	return nil
+}
+
 // updateMeter updates and publishes single meter
 func (site *Site) updateMeters() error {
 	retryMeter := func(s string, m api.Meter, f *float64) error {
@@ -276,14 +283,7 @@ func (site *Site) updateMeters() error {
 		return err
 	}
 
-	// pv meter is not critical for operation
-	_ = retryMeter("pv", site.pvMeter, &site.pvPower)
-	_ = retryMeter("consumption", site.consumptionMeter, &site.consumptionPower)
-
-	err := retryMeter("grid", site.gridMeter, &site.gridPower)
-	if err == nil {
-		err = retryMeter("battery", site.batteryMeter, &site.batteryPower)
-	}
+	var err error
 
 	// currents
 	if phaseMeter, ok := site.gridMeter.(api.MeterCurrent); err == nil && ok {
@@ -291,6 +291,31 @@ func (site *Site) updateMeters() error {
 		if err == nil {
 			site.log.TRACE.Printf("grid currents: %.3gA", []float64{i1, i2, i3})
 			site.publish("gridCurrents", []float64{i1, i2, i3})
+		}
+	}
+
+	// allow using PV as estimate for grid power
+	if site.gridMeter == nil {
+		site.gridPower = -site.pvPower
+
+		consumption := float64(0)
+		for _, slp := range site.loadpoints {
+			if curr, err := slp.chargeMeter.CurrentPower(); err == nil {
+				consumption += curr
+				site.gridPower = site.gridPower + curr
+			}
+		}
+		_ = retryMeter("pv", site.pvMeter, &site.pvPower)
+		site.updateMeter2("consumption", consumption, &site.consumptionPower)
+		site.updateMeter2("grid", site.gridPower, &site.gridPower)
+	} else {
+		// pv meter is not critical for operation
+		_ = retryMeter("pv", site.pvMeter, &site.pvPower)
+		_ = retryMeter("consumption", site.consumptionMeter, &site.consumptionPower)
+
+		err = retryMeter("grid", site.gridMeter, &site.gridPower)
+		if err == nil {
+			err = retryMeter("battery", site.batteryMeter, &site.batteryPower)
 		}
 	}
 

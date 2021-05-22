@@ -1,6 +1,6 @@
 <template>
 	<div class="row">
-		<div class="col-6 col-md-3 mt-3" v-if="gridConfigured">
+		<div class="col-6 col-md-3 mt-3">
 			<div class="mb-2 value" v-if="gridPower > 0">
 				Bezug <fa-icon icon="arrow-down" class="text-primary" />
 			</div>
