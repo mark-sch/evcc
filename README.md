@@ -18,6 +18,7 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 | ![Sunny5 Smartbox comes with ioBroker](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_vis.jpeg?raw=true) | ![Every Smartbox has remote access capabilities](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_evcc.jpeg?raw=true) |
 
 ## What's new?
+- Added support for simple grid inverters with pv meter only - grid and consumption meters are calculated and displayed.
 - Load management with multiple loadpoints: e.g. press pv mode twice to set a charge priority
 - Load limitation feature on site level: e.g. multiple loadpoints can share a single 16A grid connection.
 - New contactor wellness feature. Purpose: Minimize contactor switching on ev batteries by avoiding unnecessary charger turn offs on low pv power. This feature also avoids that many ev's are falling asleep after a certain amount of turn on/offs. A turn off delay will by dynamically calculated based on the houshold battery soc.
