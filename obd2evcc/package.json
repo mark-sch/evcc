@@ -1,0 +1,34 @@
+{
+  "name": "obd2evcc-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "smartplug-service.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "elm327",
+    "obd",
+    "evcc",
+    "wifi",
+    "tesla",
+    "kona",
+    "id.3",
+    "id.4",
+    "e-golf",
+    "e-up",
+    "e-208",
+    "vw",
+    "peugeot"
+  ],
+  "author": "Think5 GmbH",
+  "license": "MIT",
+  "dependencies": {
+    "binary-parser-encoder": "^1.5.3",
+    "dgram": "^1.0.1",
+    "inquirer": "^8.1.1",
+    "mqtt": "^4.2.8",
+    "node-wifi": "^2.0.14",
+    "readline": "^1.3.0"
+  }
+}
