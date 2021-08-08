@@ -499,12 +499,18 @@ func (site *Site) Run(stopC chan struct{}, interval time.Duration) {
 	if sitePower, err := site.sitePower(); err == nil {
 		site.update(<-loadpointChan, sitePower) // start immediately
 	}
+	var countWaiter int
+	if len(site.loadpoints) > 1 {
+		countWaiter = 1
+	} else {
+		countWaiter = 2
+	}
 
 	for {
 		select {
 		case <-ticker.C:
 			if sitePower, err := site.sitePower(); err == nil {
-				if site.count >= 2 {
+				if site.count >= countWaiter {
 					site.update(<-loadpointChan, sitePower)
 					site.count = 0
 				} else {

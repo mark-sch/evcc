@@ -1036,7 +1036,7 @@ func (lp *LoadPoint) publishSoCAndRange(force bool) {
 			// we need a value- so retry on error
 			lp.socUpdated = lp.clock.Now()
 
-			lp.log.ERROR.Printf("vehicle error: %v", err)
+			//lp.log.ERROR.Printf("vehicle error: %v", err)
 		}
 
 		// range
