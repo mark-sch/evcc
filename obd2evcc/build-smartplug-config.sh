@@ -9,12 +9,11 @@ function norestart {
 
 function restartSmartplug {
    printf "\nRestarting smartplug service now...\n"
-   pm2 restart smartplug-service
+   pm2 restart sunny5smartplug
 
    sleep 1
 
    printf "\nDone!"
-   pm2 status
    printf "\n"
    printf "!!! Take a look into the SMARTPLUG EVENTLOG and check ioBroker mqtt data for correct soc data !!!\n"
 }
