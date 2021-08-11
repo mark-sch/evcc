@@ -1,0 +1,1253 @@
+[
+    {
+        "id": "65f8fea6.b118c",
+        "type": "tab",
+        "label": "Mining Rig",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "6748f53c.8a4e6c",
+        "type": "group",
+        "z": "65f8fea6.b118c",
+        "name": "",
+        "style": {
+            "fill": "#e3f3d3",
+            "label": true
+        },
+        "nodes": [
+            "47639fad.7dad3",
+            "700d7b3e.37fee4",
+            "8cfad5e0.6941c8",
+            "54a43908.8f0468",
+            "ffa1856a.7d7098",
+            "a3459940.119568",
+            "8b33ba8d.20e7f8",
+            "3437f9a5.fb7616",
+            "d47e0483.da2548",
+            "c8929926.1bf028",
+            "16c5a02d.161e5",
+            "270c638.e530e9c",
+            "f8c085d8.f312a8"
+        ],
+        "x": 94,
+        "y": 119,
+        "w": 1112,
+        "h": 262
+    },
+    {
+        "id": "7b09ac87.0cf2d4",
+        "type": "group",
+        "z": "65f8fea6.b118c",
+        "name": "",
+        "style": {
+            "fill": "#f1f1f1",
+            "label": true
+        },
+        "nodes": [
+            "2873620a.fdaf6e",
+            "347ba747.4148c8",
+            "7af0e767.066ad8",
+            "27caf14d.d6939e",
+            "ed50d2ab.b8d99",
+            "225b29ba.1c8b56",
+            "76efc2a2.20601c",
+            "823371b.a3ea59",
+            "a9204570.d84488",
+            "2dd224f4.a0d22c"
+        ],
+        "x": 1494,
+        "y": 439,
+        "w": 672,
+        "h": 322
+    },
+    {
+        "id": "accc1453.598fb8",
+        "type": "group",
+        "z": "65f8fea6.b118c",
+        "name": "Monitor GPU0",
+        "style": {
+            "fill": "#ffefbf",
+            "label": true
+        },
+        "nodes": [
+            "b19b7a01.001888",
+            "ac18cd62.f3429",
+            "cb37f5ad.9d6048",
+            "16e64ee4.7ba4c1",
+            "414ebd39.fd8274",
+            "d0d0e50f.1fa938",
+            "fc2ceadb.69c738",
+            "5ab6e6ed.3b4808",
+            "47e2ddc3.a92274",
+            "ec19fa03.df0438",
+            "10753f9c.6524b",
+            "6cb60838.09f528",
+            "989e5acc.3f39d8"
+        ],
+        "x": 94,
+        "y": 799,
+        "w": 1112,
+        "h": 262
+    },
+    {
+        "id": "af95d325.cb552",
+        "type": "group",
+        "z": "65f8fea6.b118c",
+        "name": "",
+        "style": {
+            "fill": "#ffffbf",
+            "label": true
+        },
+        "nodes": [
+            "e40b3e61.d539e",
+            "56e049af.3072d8",
+            "1fc0875b.379359",
+            "b88ed9e7.482348",
+            "6a5bb30c.cc21fc",
+            "ae80b4f8.fcee08",
+            "dd689633.8a7e68",
+            "f6c78f0a.68607",
+            "12f3ee73.a6d152",
+            "362881e6.1810ae",
+            "bee5c314.f203c",
+            "d24678b5.44b598"
+        ],
+        "x": 94,
+        "y": 459,
+        "w": 1112,
+        "h": 262
+    },
+    {
+        "id": "47639fad.7dad3",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "sunny5/soc",
+        "topic": "mqtt.0.sunny5.soc",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 190,
+        "y": 280,
+        "wires": [
+            [
+                "a3459940.119568",
+                "d47e0483.da2548"
+            ]
+        ]
+    },
+    {
+        "id": "700d7b3e.37fee4",
+        "type": "ioBroker out",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "sunny5miner/rig1/gpu2/enabled/set",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu2.enabled.set",
+        "ack": "false",
+        "autoCreate": "false",
+        "stateName": "",
+        "role": "",
+        "payloadType": "",
+        "readonly": "",
+        "stateUnit": "",
+        "stateMin": "",
+        "stateMax": "",
+        "x": 1040,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8cfad5e0.6941c8",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "sunny5miner/rig1/gpu2/enabled",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu2.enabled",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 290,
+        "y": 220,
+        "wires": [
+            [
+                "3437f9a5.fb7616"
+            ]
+        ]
+    },
+    {
+        "id": "54a43908.8f0468",
+        "type": "debug",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "ffa1856a.7d7098",
+        "type": "function",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "enableGPU2",
+        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 240,
+        "wires": [
+            [
+                "700d7b3e.37fee4"
+            ]
+        ]
+    },
+    {
+        "id": "a3459940.119568",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": ">=80%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "80",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 360,
+        "y": 280,
+        "wires": [
+            [
+                "8b33ba8d.20e7f8"
+            ]
+        ]
+    },
+    {
+        "id": "8b33ba8d.20e7f8",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "enableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "enableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 280,
+        "wires": [
+            [
+                "ffa1856a.7d7098"
+            ]
+        ]
+    },
+    {
+        "id": "3437f9a5.fb7616",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "gpuRunning",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "gpuRunning",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 220,
+        "wires": [
+            [
+                "ffa1856a.7d7098"
+            ]
+        ]
+    },
+    {
+        "id": "d47e0483.da2548",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": " <80%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "80",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 340,
+        "wires": [
+            [
+                "c8929926.1bf028"
+            ]
+        ]
+    },
+    {
+        "id": "c8929926.1bf028",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "disableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "disableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 340,
+        "wires": [
+            [
+                "ffa1856a.7d7098"
+            ]
+        ]
+    },
+    {
+        "id": "e40b3e61.d539e",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "sunny5/soc",
+        "topic": "mqtt.0.sunny5.soc",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 190,
+        "y": 620,
+        "wires": [
+            [
+                "6a5bb30c.cc21fc",
+                "f6c78f0a.68607"
+            ]
+        ]
+    },
+    {
+        "id": "56e049af.3072d8",
+        "type": "ioBroker out",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "sunny5miner/rig1/gpu1/enabled/set",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu1.enabled.set",
+        "ack": "false",
+        "autoCreate": "false",
+        "stateName": "",
+        "role": "",
+        "payloadType": "",
+        "readonly": "",
+        "stateUnit": "",
+        "stateMin": "",
+        "stateMax": "",
+        "x": 1040,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "1fc0875b.379359",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "sunny5miner/rig1/gpu1/enabled",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu1.enabled",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 290,
+        "y": 560,
+        "wires": [
+            [
+                "dd689633.8a7e68"
+            ]
+        ]
+    },
+    {
+        "id": "b88ed9e7.482348",
+        "type": "function",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "enableGPU1",
+        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 580,
+        "wires": [
+            [
+                "56e049af.3072d8"
+            ]
+        ]
+    },
+    {
+        "id": "6a5bb30c.cc21fc",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": ">=60%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "60",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 360,
+        "y": 620,
+        "wires": [
+            [
+                "ae80b4f8.fcee08"
+            ]
+        ]
+    },
+    {
+        "id": "ae80b4f8.fcee08",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "enableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "enableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 620,
+        "wires": [
+            [
+                "b88ed9e7.482348"
+            ]
+        ]
+    },
+    {
+        "id": "dd689633.8a7e68",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "gpuRunning",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "gpuRunning",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 560,
+        "wires": [
+            [
+                "b88ed9e7.482348"
+            ]
+        ]
+    },
+    {
+        "id": "f6c78f0a.68607",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": " <60%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "60",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 680,
+        "wires": [
+            [
+                "12f3ee73.a6d152"
+            ]
+        ]
+    },
+    {
+        "id": "12f3ee73.a6d152",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "disableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "disableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 680,
+        "wires": [
+            [
+                "b88ed9e7.482348"
+            ]
+        ]
+    },
+    {
+        "id": "b19b7a01.001888",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "sunny5/soc",
+        "topic": "mqtt.0.sunny5.soc",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 190,
+        "y": 960,
+        "wires": [
+            [
+                "414ebd39.fd8274",
+                "5ab6e6ed.3b4808"
+            ]
+        ]
+    },
+    {
+        "id": "ac18cd62.f3429",
+        "type": "ioBroker out",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "sunny5miner/rig1/gpu0/enabled/set",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu0.enabled.set",
+        "ack": "false",
+        "autoCreate": "false",
+        "stateName": "",
+        "role": "",
+        "payloadType": "",
+        "readonly": "",
+        "stateUnit": "",
+        "stateMin": "",
+        "stateMax": "",
+        "x": 1040,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "cb37f5ad.9d6048",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "sunny5miner/rig1/gpu0/enabled",
+        "topic": "mqtt.0.sunny5miner.rig1.gpu0.enabled",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 290,
+        "y": 900,
+        "wires": [
+            [
+                "fc2ceadb.69c738"
+            ]
+        ]
+    },
+    {
+        "id": "16e64ee4.7ba4c1",
+        "type": "function",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "enableGPU0",
+        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 920,
+        "wires": [
+            [
+                "ac18cd62.f3429"
+            ]
+        ]
+    },
+    {
+        "id": "414ebd39.fd8274",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": ">=40%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "40",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 360,
+        "y": 960,
+        "wires": [
+            [
+                "d0d0e50f.1fa938"
+            ]
+        ]
+    },
+    {
+        "id": "d0d0e50f.1fa938",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "enableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "enableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 960,
+        "wires": [
+            [
+                "16e64ee4.7ba4c1"
+            ]
+        ]
+    },
+    {
+        "id": "fc2ceadb.69c738",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "gpuRunning",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "gpuRunning",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 900,
+        "wires": [
+            [
+                "16e64ee4.7ba4c1"
+            ]
+        ]
+    },
+    {
+        "id": "5ab6e6ed.3b4808",
+        "type": "switch",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": " <40%",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "40",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 1020,
+        "wires": [
+            [
+                "47e2ddc3.a92274"
+            ]
+        ]
+    },
+    {
+        "id": "47e2ddc3.a92274",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "disableGpu",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "disableGpu",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 1020,
+        "wires": [
+            [
+                "16e64ee4.7ba4c1"
+            ]
+        ]
+    },
+    {
+        "id": "2873620a.fdaf6e",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "rig1/hashrate",
+        "topic": "mqtt.0.sunny5miner.rig1.hashrate",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1830,
+        "y": 480,
+        "wires": [
+            []
+        ],
+        "info": "Hashrate des gesamten Mining Rigs:"
+    },
+    {
+        "id": "347ba747.4148c8",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "ethMiningBalance",
+        "topic": "mqtt.0.sunny5miner.rig1.nanopool.balance",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 2050,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec19fa03.df0438",
+        "type": "debug",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "10753f9c.6524b",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "vehicleChargePower",
+        "topic": "mqtt.0.evcc.site.totalChargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 210,
+        "y": 840,
+        "wires": [
+            [
+                "989e5acc.3f39d8"
+            ]
+        ]
+    },
+    {
+        "id": "6cb60838.09f528",
+        "type": "trigger",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "checker",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-10",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 540,
+        "y": 840,
+        "wires": [
+            [
+                "16e64ee4.7ba4c1"
+            ]
+        ]
+    },
+    {
+        "id": "989e5acc.3f39d8",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "EV",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "EV",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 840,
+        "wires": [
+            [
+                "6cb60838.09f528"
+            ]
+        ]
+    },
+    {
+        "id": "7af0e767.066ad8",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "vehicleChargePower",
+        "topic": "mqtt.0.evcc.site.totalChargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1610,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "27caf14d.d6939e",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car1.soc",
+        "topic": "mqtt.0.sunny5soc.car1.soc",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1820,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ed50d2ab.b8d99",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car1.name",
+        "topic": "mqtt.0.sunny5soc.car1.name",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1820,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "225b29ba.1c8b56",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car2.name",
+        "topic": "mqtt.0.sunny5soc.car2.name",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 2020,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "76efc2a2.20601c",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car2.soc",
+        "topic": "mqtt.0.sunny5soc.car2.soc",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 2020,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "823371b.a3ea59",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car1.chPower",
+        "topic": "mqtt.0.evcc.loadpoints.1.chargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1830,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a9204570.d84488",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "car2.chPower",
+        "topic": "mqtt.0.evcc.loadpoints.2.chargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 2030,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2dd224f4.a0d22c",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "7b09ac87.0cf2d4",
+        "name": "sunny5/pv_energy",
+        "topic": "mqtt.0.sunny5.pv_energy",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 1610,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "362881e6.1810ae",
+        "type": "trigger",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "checker",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-10",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 540,
+        "y": 500,
+        "wires": [
+            [
+                "b88ed9e7.482348"
+            ]
+        ]
+    },
+    {
+        "id": "bee5c314.f203c",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "EV",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "EV",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 500,
+        "wires": [
+            [
+                "362881e6.1810ae"
+            ]
+        ]
+    },
+    {
+        "id": "d24678b5.44b598",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "vehicleChargePower",
+        "topic": "mqtt.0.evcc.site.totalChargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 210,
+        "y": 500,
+        "wires": [
+            [
+                "bee5c314.f203c"
+            ]
+        ]
+    },
+    {
+        "id": "16c5a02d.161e5",
+        "type": "ioBroker in",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "vehicleChargePower",
+        "topic": "mqtt.0.evcc.site.totalChargePower",
+        "payloadType": "value",
+        "onlyack": "",
+        "func": "all",
+        "gap": "",
+        "fireOnStart": "true",
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "270c638.e530e9c"
+            ]
+        ]
+    },
+    {
+        "id": "270c638.e530e9c",
+        "type": "change",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "EV",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "EV",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "f8c085d8.f312a8"
+            ]
+        ]
+    },
+    {
+        "id": "f8c085d8.f312a8",
+        "type": "trigger",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "checker",
+        "op1": "",
+        "op2": "0",
+        "op1type": "pay",
+        "op2type": "str",
+        "duration": "-10",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 540,
+        "y": 160,
+        "wires": [
+            [
+                "ffa1856a.7d7098"
+            ]
+        ]
+    }
+]
