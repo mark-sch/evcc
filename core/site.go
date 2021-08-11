@@ -322,6 +322,16 @@ func (site *Site) updateMeters() error {
 	return err
 }
 
+func (site *Site) totalChargePower() float64 {
+	var totalCP float64 = 0
+
+	for _, slp := range site.loadpoints {
+		totalCP += slp.chargePower
+	}
+
+	return totalCP
+}
+
 // consumedPower estimates how much power the charger might have consumed given it was the only load
 // func (site *Site) consumedPower() float64 {
 // 	return consumedPower(lp.pvPower, lp.batteryPower, lp.gridPower)
@@ -364,6 +374,10 @@ func (site *Site) sitePower() (float64, error) {
 	sitePower := sitePower(site.gridPower, batteryPower, site.ResidualPower)
 	site.log.DEBUG.Printf("site power: %.0fW", sitePower)
 	site.publish("sitePower", math.Trunc(sitePower))
+
+	//publish totalChargePower
+	totalCP := site.totalChargePower()
+	site.publish("totalChargePower", math.Trunc(totalCP))
 
 	return sitePower, nil
 }
