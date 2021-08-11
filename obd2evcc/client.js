@@ -32,7 +32,7 @@ if (config.mode == 'AP') {
 
 // run obd2evcc client
 let objODB = new obd2evcc(vehicle_type, vehicle_name, vehicle_wltp, host, port, mqtt_server);
-objODB.startClient(vehicle_type);
+objODB.startClient(false);
 
 console.log('********************************************');
 console.log();

@@ -23,7 +23,7 @@ configs.forEach(config => {
     
     // run obd2evcc client
     config.objOBD = new obd2evcc(config.vehicle_type, config.name, config.vehicle_wltp, config.host, config.port, config.mqtt_server, config.mqtt_topic);
-    config.objOBD.startClient(config.vehicle_type);
+    config.objOBD.startClient(false);
     
     console.log('********************************************');
     console.log();
