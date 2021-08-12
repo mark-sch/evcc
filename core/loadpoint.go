@@ -900,6 +900,9 @@ func (lp *LoadPoint) adjustForContactorWellness() {
 			if soc > 90 && pvPower > 50 {
 				lp.site.ResidualPower = -250 - lp.Disable.Threshold
 			}
+			if soc > 95 && pvPower > 50 {
+				lp.site.ResidualPower = -3000 - lp.Disable.Threshold
+			}
 			if soc < 70 && pvPower > 50 {
 				lp.site.ResidualPower = 250
 			}
