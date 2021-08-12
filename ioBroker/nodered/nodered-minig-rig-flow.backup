@@ -10,7 +10,7 @@
         "id": "6748f53c.8a4e6c",
         "type": "group",
         "z": "65f8fea6.b118c",
-        "name": "",
+        "name": "Monitor GPU2",
         "style": {
             "fill": "#e3f3d3",
             "label": true
@@ -28,7 +28,8 @@
             "c8929926.1bf028",
             "16c5a02d.161e5",
             "270c638.e530e9c",
-            "f8c085d8.f312a8"
+            "f8c085d8.f312a8",
+            "1c60ffb5.2f5ba"
         ],
         "x": 94,
         "y": 119,
@@ -56,7 +57,7 @@
             "a9204570.d84488",
             "2dd224f4.a0d22c"
         ],
-        "x": 1494,
+        "x": 1314,
         "y": 439,
         "w": 672,
         "h": 322
@@ -83,7 +84,8 @@
             "ec19fa03.df0438",
             "10753f9c.6524b",
             "6cb60838.09f528",
-            "989e5acc.3f39d8"
+            "989e5acc.3f39d8",
+            "eb472ee4.dc136"
         ],
         "x": 94,
         "y": 799,
@@ -94,7 +96,7 @@
         "id": "af95d325.cb552",
         "type": "group",
         "z": "65f8fea6.b118c",
-        "name": "",
+        "name": "Monitor GPU1",
         "style": {
             "fill": "#ffffbf",
             "label": true
@@ -111,7 +113,8 @@
             "12f3ee73.a6d152",
             "362881e6.1810ae",
             "bee5c314.f203c",
-            "d24678b5.44b598"
+            "d24678b5.44b598",
+            "fb30f47c.30cb48"
         ],
         "x": 94,
         "y": 459,
@@ -185,7 +188,7 @@
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -203,7 +206,7 @@
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
         "name": "enableGPU2",
-        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "func": "context.enableGpu2 = context.enableGpu2 || false;\ncontext.disableGpu2 = context.disableGpu2 || false;\ncontext.isRunning2 = context.isRunning2 || false;\ncontext.evChargePower = context.evChargePower || 0;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu2 = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu2 = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning2 = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu2\nlet disableGpu = context.disableGpu2\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning2 == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu2 now')\n  return {topic: 'enableGPU', payload: 'true'}\n} \nelse if (context.isRunning2 == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu2 now')\n  return {topic: 'enableGPU', payload: 'false'}\n} \nelse {\n  return null\n}\n\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -213,7 +216,7 @@
         "y": 240,
         "wires": [
             [
-                "700d7b3e.37fee4"
+                "1c60ffb5.2f5ba"
             ]
         ]
     },
@@ -248,7 +251,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
-        "name": "enableGpu",
+        "name": "enableGpu2",
         "rules": [
             {
                 "t": "set",
@@ -283,7 +286,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
-        "name": "gpuRunning",
+        "name": "gpuRunning2",
         "rules": [
             {
                 "t": "set",
@@ -337,7 +340,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
-        "name": "disableGpu",
+        "name": "disableGpu2",
         "rules": [
             {
                 "t": "set",
@@ -434,7 +437,7 @@
         "z": "65f8fea6.b118c",
         "g": "af95d325.cb552",
         "name": "enableGPU1",
-        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "func": "context.enableGpu1 = context.enableGpu1 || false;\ncontext.disableGpu1 = context.disableGpu1 || false;\ncontext.isRunning1 = context.isRunning1 || false;\ncontext.evChargePower = context.evChargePower || 0;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu1 = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu1 = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning1 = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu1\nlet disableGpu = context.disableGpu1\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning1 == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu1 now')\n  return {topic: 'enableGPU', payload: 'true'}\n} \nelse if (context.isRunning1 == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu1 now')\n  return {topic: 'enableGPU', payload: 'false'}\n} \nelse {\n  return null\n}\n\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -444,7 +447,7 @@
         "y": 580,
         "wires": [
             [
-                "56e049af.3072d8"
+                "fb30f47c.30cb48"
             ]
         ]
     },
@@ -479,7 +482,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "af95d325.cb552",
-        "name": "enableGpu",
+        "name": "enableGpu1",
         "rules": [
             {
                 "t": "set",
@@ -514,7 +517,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "af95d325.cb552",
-        "name": "gpuRunning",
+        "name": "gpuRunning1",
         "rules": [
             {
                 "t": "set",
@@ -568,7 +571,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "af95d325.cb552",
-        "name": "disableGpu",
+        "name": "disableGpu1",
         "rules": [
             {
                 "t": "set",
@@ -665,7 +668,7 @@
         "z": "65f8fea6.b118c",
         "g": "accc1453.598fb8",
         "name": "enableGPU0",
-        "func": "context.enableGpu = context.enableGpu || false;\ncontext.disableGpu = context.disableGpu || false;\ncontext.isRunning = context.isRunning || false;\ncontext.evChargePower = context.evChargePower || 10;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu\nlet disableGpu = context.disableGpu\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu now')\n  return {topic: 'enableGPU', payload: true}\n} \nelse if (context.isRunning == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu now')\n  return {topic: 'enableGPU', payload: false}\n} \nelse {\n  return null\n}\n\n",
+        "func": "context.enableGpu0 = context.enableGpu0 || false;\ncontext.disableGpu0 = context.disableGpu0 || false;\ncontext.isRunning0 = context.isRunning0 || false;\ncontext.evChargePower = context.evChargePower || 0;\n\n\nif (msg.topic === 'enableGpu') {\n  context.enableGpu0 = String(msg.payload);\n} \nelse if (msg.topic === 'disableGpu') {\n  context.disableGpu0 = String(msg.payload);\n} \nelse if (msg.topic === 'gpuRunning') {\n  context.isRunning0 = String(msg.payload);\n}\nelse if (msg.topic === 'EV') {\n  context.evChargePower = Number(msg.payload);\n}\n\n//disable gpu if ev is charging - except when there is more than 3kW charge Power\nlet enableGpu = context.enableGpu0\nlet disableGpu = context.disableGpu0\nif (context.evChargePower > 0 && context.evChargePower < 3000) {\n    enableGpu = 'false';\n    disableGpu = 'true';\n}\n\nif (context.isRunning0 == 'false' && enableGpu == 'true') {\n  node.warn('ok, enable gpu0 now')\n  return {topic: 'enableGPU', payload: 'true'}\n} \nelse if (context.isRunning0 == 'true' && disableGpu == 'true') {\n  node.warn('ok, disable gpu0 now')\n  return {topic: 'enableGPU', payload: 'false'}\n} \nelse {\n  return null\n}\n\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -675,7 +678,7 @@
         "y": 920,
         "wires": [
             [
-                "ac18cd62.f3429"
+                "eb472ee4.dc136"
             ]
         ]
     },
@@ -710,7 +713,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "accc1453.598fb8",
-        "name": "enableGpu",
+        "name": "enableGpu0",
         "rules": [
             {
                 "t": "set",
@@ -745,7 +748,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "accc1453.598fb8",
-        "name": "gpuRunning",
+        "name": "gpuRunning0",
         "rules": [
             {
                 "t": "set",
@@ -799,7 +802,7 @@
         "type": "change",
         "z": "65f8fea6.b118c",
         "g": "accc1453.598fb8",
-        "name": "disableGpu",
+        "name": "disableGpu0",
         "rules": [
             {
                 "t": "set",
@@ -841,7 +844,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1830,
+        "x": 1650,
         "y": 480,
         "wires": [
             []
@@ -860,7 +863,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 2050,
+        "x": 1870,
         "y": 480,
         "wires": [
             []
@@ -909,7 +912,7 @@
         "type": "trigger",
         "z": "65f8fea6.b118c",
         "g": "accc1453.598fb8",
-        "name": "checker",
+        "name": "checker0",
         "op1": "",
         "op2": "0",
         "op1type": "pay",
@@ -970,7 +973,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1610,
+        "x": 1430,
         "y": 600,
         "wires": [
             []
@@ -988,7 +991,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1820,
+        "x": 1640,
         "y": 720,
         "wires": [
             []
@@ -1006,7 +1009,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1820,
+        "x": 1640,
         "y": 660,
         "wires": [
             []
@@ -1024,7 +1027,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 2020,
+        "x": 1840,
         "y": 660,
         "wires": [
             []
@@ -1042,7 +1045,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 2020,
+        "x": 1840,
         "y": 720,
         "wires": [
             []
@@ -1060,7 +1063,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1830,
+        "x": 1650,
         "y": 600,
         "wires": [
             []
@@ -1078,7 +1081,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 2030,
+        "x": 1850,
         "y": 600,
         "wires": [
             []
@@ -1096,7 +1099,7 @@
         "func": "all",
         "gap": "",
         "fireOnStart": "true",
-        "x": 1610,
+        "x": 1430,
         "y": 480,
         "wires": [
             []
@@ -1107,7 +1110,7 @@
         "type": "trigger",
         "z": "65f8fea6.b118c",
         "g": "af95d325.cb552",
-        "name": "checker",
+        "name": "checker1",
         "op1": "",
         "op2": "0",
         "op1type": "pay",
@@ -1229,7 +1232,7 @@
         "type": "trigger",
         "z": "65f8fea6.b118c",
         "g": "6748f53c.8a4e6c",
-        "name": "checker",
+        "name": "checker2",
         "op1": "",
         "op2": "0",
         "op1type": "pay",
@@ -1249,5 +1252,87 @@
                 "ffa1856a.7d7098"
             ]
         ]
+    },
+    {
+        "id": "eb472ee4.dc136",
+        "type": "mqtt out",
+        "z": "65f8fea6.b118c",
+        "g": "accc1453.598fb8",
+        "name": "sunny5miner/rig1/gpu0/enabled/set",
+        "topic": "sunny5miner/rig1/gpu0/enabled/set",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "dc63c77b.4b1a68",
+        "x": 1040,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "fb30f47c.30cb48",
+        "type": "mqtt out",
+        "z": "65f8fea6.b118c",
+        "g": "af95d325.cb552",
+        "name": "sunny5miner/rig1/gpu1/enabled/set",
+        "topic": "sunny5miner/rig1/gpu1/enabled/set",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "dc63c77b.4b1a68",
+        "x": 1040,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "1c60ffb5.2f5ba",
+        "type": "mqtt out",
+        "z": "65f8fea6.b118c",
+        "g": "6748f53c.8a4e6c",
+        "name": "sunny5miner/rig1/gpu2/enabled/set",
+        "topic": "sunny5miner/rig1/gpu2/enabled/set",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "dc63c77b.4b1a68",
+        "x": 1040,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "dc63c77b.4b1a68",
+        "type": "mqtt-broker",
+        "name": "mqtt-server-localhost",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
     }
 ]
