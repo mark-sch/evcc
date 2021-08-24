@@ -34,7 +34,7 @@ echo Caution: Please consider that you might need to update the evcc.yaml config
 echo 
 
 while true; do
-    read -p "Do you want to download and install the available version now? " yn
+    read -p "Do you want to download and install the available version now [y/n]? " yn
     case $yn in
         [Yy]* ) updateEVCC; break;;
         [Nn]* ) break;;

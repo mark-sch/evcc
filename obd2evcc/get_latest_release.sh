@@ -37,7 +37,7 @@ function updateSmartplug {
     echo
 
     while true; do
-        read -p "Do you want to restart the Sunny5-Smartplug service now? " yn
+        read -p "Do you want to restart the Sunny5-Smartplug service now [y/n]? " yn
         case $yn in
             [Yy]* ) restartSmartplug; break;;
             [Nn]* ) break;;
@@ -53,7 +53,7 @@ function updateSmartplug {
 
 
 echo
-echo Smartplug-Service Installation:
+echo Smartplug-Service Update:
 echo ======================================
 echo 
 echo Installed version:
@@ -67,7 +67,7 @@ echo $VERSION
 echo 
 
 while true; do
-    read -p "Do you want to download and install the available version now? " yn
+    read -p "Do you want to download and install the available version now [y/n]? " yn
     case $yn in
         [Yy]* ) updateSmartplug; break;;
         [Nn]* ) break;;
