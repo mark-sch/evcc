@@ -7,7 +7,7 @@
 
 EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage. This charge controller is Open Source, derived from andig/evcc, with enhancements and features for load management and load limitation on multiple loadpoints.
 
-This project is part of Sunny5 Smartbox, a complete hard- and software solution running locally for smarthome and wallbox management, ready to go with remote access and based on open standards.
+This project is part of <b>[Sunny5 Smartbox](https://www.sunny5.de/goto/flyer)</b>, a complete hard- and software solution running locally for smarthome and wallbox management, ready to go with remote access and based on open standards.
 
 | Sunny5 Smartbox in action with two loadpoints |
 | ------------------------ |
