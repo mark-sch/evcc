@@ -9,7 +9,7 @@ import (
 // TestGoE tests interfaces
 func TestGoE(t *testing.T) {
 	var wb api.Charger
-	wb, err := NewGoE("foo", "bar", 0)
+	wb, err := NewGoE("foo", "bar", 0, "2")
 	if err != nil {
 		t.Error(err)
 	}
