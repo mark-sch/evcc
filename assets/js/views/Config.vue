@@ -3,9 +3,11 @@
 		<!-- <h1 class="display-4 pt-3 mx-auto text-center">Konfiguration</h1>
 		<p class="lead mx-auto text-center">Details der Fahrzeug-, Wallbox- und Zählerkonfiguration.</p> -->
 
+
+		<!--
 		<div class="row mt-4 border-bottom">
 			<div class="col-12">
-				<p class="h1">{{ title || "Home" }}</p>
+				<p class="h1">{{ title || "Z&auml;hler" }}</p>
 			</div>
 		</div>
 
@@ -27,6 +29,8 @@
 				<span class="text-primary" v-else>&mdash;</span>
 			</div>
 		</div>
+		-->
+		
 
 		<div
 			v-for="(loadpoint, id) in loadpoints"
@@ -84,10 +88,17 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
 	name: "Config",
 	data: function () {
 		return this.$root.$data.store.state; // global state
+	},
+	methods: {
+		api: function (func) {
+			return "loadpoints/" + this.id + "/" + func;
+		}
 	},
 };
 </script>

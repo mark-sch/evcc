@@ -120,6 +120,18 @@ func (m *MQTT) listenSetters(topic string, apiHandler core.LoadPointAPI) {
 		}
 	})
 
+	m.publishSingleValue(topic+"/activePhases/set", false, "ok")
+	m.Handler.Listen(topic+"/activePhases/set", func(payload string) {
+		if payload != "ok" {
+			phases, err := strconv.Atoi(payload)
+			if err == nil {
+				apiHandler.SetPhases(int64(phases))
+				//confirm /set change
+				m.publishSingleValue(topic+"/activePhases/set", true, "ok")
+			}
+		}
+	})
+
 	m.publishSingleValue(topic+"/minSoC/set", false, "ok")
 	m.Handler.Listen(topic+"/minSoC/set", func(payload string) {
 		if payload != "ok" {

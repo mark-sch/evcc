@@ -111,7 +111,7 @@ window.setInterval(async function () {
       window.throttledToasts["health"].reset();
     })
     .catch(function (res) {
-      res.message = "EVCC nicht erreichbar";
-      window.throttledToasts["health"](res);
+      //res.message = "EVCC nicht erreichbar";
+      //window.throttledToasts["health"](res);
     });
-}, 5000);
+}, 20000);

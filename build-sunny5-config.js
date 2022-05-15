@@ -21,6 +21,11 @@ subnetPinger.on('host:alive', async ip => {
       foundWB = true;
       wallboxIP = ip;
     }
+    if (item.ip == ip && String(item.mac).startsWith('c4:5b:be') && !foundWB) {
+      console.log('Found', ip, '\t', item.mac, '\t', 'go-e Charger Wallbox');
+      foundWB = true;
+      wallboxIP = ip;
+    }
     if (foundSunny5 && foundWB) subnetPinger.emit('ping:end');
   })
 });
@@ -104,20 +109,35 @@ function fillTemplateWriteConfig(templateEvcc, templateSunny5, inverterIP, wallb
 
 async function discover() {
   let arrPing = [];
+  let count = 0;
   arpTable = await arp.getTable();
   arpTable.forEach(item => {
-    if (item.vendor == 'Keba GmbH' || item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd') {
-      console.log('Trying to ping', item.ip); 
+    //console.log('Found', item.mac, item.ip, item.vendor);
+    if (String(item.mac).startsWith('c4:5b:be')) {
+      item.vendor = 'go-e Charger';
+    }
+    if (item.vendor == 'Keba GmbH' || item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd' || item.vendor == 'go-e Charger') {
+      console.log('Trying to ping:', item.ip, '#', item.vendor); 
       arrPing.push(item.ip);
+      count++;
     }
   });
+  console.log('');
+
+  if (count > 2) {
+    console.log('NOTICE: Only one wallbox and inverter can be configured automatically. More units have been found, you need to configure evcc.yaml manually.');
+    console.log('');
+    console.log('Aborting config file builder now.');
+    process.exit(0);
+  }
+
   subnetPinger.ping();
 }
 
 function main() {
   console.log('');
   console.log('****************************************************');
-  console.log('*** Sunny5-Smartbox config file builder, v1.3    ***');
+  console.log('*** Sunny5-Smartbox config file builder, v1.4    ***');
   console.log('****************************************************');
   console.log('');
 

@@ -17,6 +17,7 @@ type LoadPointAPI interface {
 	SetMode(api.ChargeMode)
 	GetTargetSoC() int
 	SetTargetSoC(int) error
+	SetPhases(int64) error
 	GetMinSoC() int
 	SetMinSoC(int) error
 	SetTargetCharge(time.Time, int)
@@ -94,6 +95,23 @@ func (lp *LoadPoint) SetTargetSoC(soc int) error {
 	if lp.SoC.Target != soc {
 		lp.SoC.Target = soc
 		lp.publish("targetSoC", soc)
+		lp.requestUpdate()
+	}
+
+	return nil
+}
+
+// SetPhases sets loadpoint default phases
+func (lp *LoadPoint) SetPhases(phases int64) error {
+	lp.Lock()
+	defer lp.Unlock()
+
+	lp.log.INFO.Println("set loadpoint phases:", phases)
+
+	// apply immediately
+	if lp.Phases != phases {
+		lp.Phases = phases
+		lp.publish("activePhases", phases)
 		lp.requestUpdate()
 	}
 

@@ -91,12 +91,15 @@ func NewKeba(uri, serial string, rfid RFID, timeout time.Duration) (api.Charger,
 
 func (c *Keba) receive(report int, resC chan<- keba.UDPMsg, errC chan<- error, closeC <-chan struct{}) {
 	t := time.NewTimer(c.timeout)
+	timeoutCounter := 0
+
 	defer close(resC)
 	defer close(errC)
 	for {
 		select {
 		case msg := <-c.recv:
 			// matching result message
+			timeoutCounter = 0
 			if msg.Report == nil && report == 0 {
 				resC <- msg
 				return
@@ -107,7 +110,10 @@ func (c *Keba) receive(report int, resC chan<- keba.UDPMsg, errC chan<- error, c
 				return
 			}
 		case <-t.C:
-			errC <- errors.New("recv timeout")
+			timeoutCounter++
+			if timeoutCounter >= 5 {
+				errC <- errors.New("recv timeout")
+			}
 			return
 		case <-closeC:
 			return
@@ -161,7 +167,7 @@ func (c *Keba) roundtrip(msg string, report int, res interface{}) error {
 func (c *Keba) Status() (api.ChargeStatus, error) {
 	var kr keba.Report2
 	err := c.roundtrip("report", 2, &kr)
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 
 	if err != nil {
 		return api.StatusA, err

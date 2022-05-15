@@ -760,7 +760,8 @@ func (lp *LoadPoint) updateChargerStatus(bolLog bool) error {
 		}
 
 		// changed to A - disconnected
-		if status == api.StatusA {
+		if status == api.StatusA && lp.chargePower == float64(0) {
+			//this second check prevents a charge stop when actually a chargeCurrent is measured but a wrong StatusA is reported by the WB (Keba)
 			lp.bus.Publish(evVehicleDisconnect)
 		}
 
@@ -895,14 +896,14 @@ func (lp *LoadPoint) adjustForContactorWellness() {
 				lp.Disable.Delay = 10 * time.Minute
 			}
 			if soc > 30 && pvPower > 50 {
-				lp.Disable.Delay = 60 * time.Minute
+				lp.Disable.Delay = 20 * time.Minute
 			}
 			if soc > 90 && pvPower > 50 {
 				lp.site.ResidualPower = -250 - lp.Disable.Threshold
 			}
-			if soc > 95 && pvPower > 50 {
-				lp.site.ResidualPower = -3000 - lp.Disable.Threshold
-			}
+			//if soc > 95 && pvPower > 50 {
+			//	lp.site.ResidualPower = -3000 - lp.Disable.Threshold
+			//}
 			if soc < 70 && pvPower > 50 {
 				lp.site.ResidualPower = 250
 			}
@@ -978,9 +979,9 @@ func (lp *LoadPoint) updateChargeCurrents() {
 func (lp *LoadPoint) publishChargeProgress() {
 	if f, err := lp.chargeRater.ChargedEnergy(); err == nil {
 		lp.chargedEnergy = 1e3 * f // convert to Wh
-	} else {
+	} /*else {
 		lp.log.ERROR.Printf("charge rater error: %v", err)
-	}
+	}*/
 
 	if d, err := lp.chargeTimer.ChargingTime(); err == nil {
 		lp.chargeDuration = d.Round(time.Second)

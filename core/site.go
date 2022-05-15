@@ -36,6 +36,7 @@ type Site struct {
 	ResidualPower           float64      `mapstructure:"residualPower"`           // PV meter only: household usage. Grid meter: household safety margin
 	MaxCurrent              float64      `mapstructure:"maxcurrent"`              // MaxCurrent limit accross all loadpoints
 	HasSunny5Menu           bool         `mapstructure:"hasSunny5Menu"`           // Enable the extended Sunny5 menu
+	BoostAllowed            bool         `mapstructure:"boostAllowed"`            // Allow boost with second pv system
 	EnableContactorWellness bool         `mapstructure:"enableContactorWellness"` // MaxCurrent limit accross all loadpoints
 	Meters                  MetersConfig // Meter references
 	PrioritySoC             float64      `mapstructure:"prioritySoC"` // prefer battery up to this SoC
@@ -148,6 +149,7 @@ func meterCapabilities(name string, meter interface{}) string {
 // DumpConfig site configuration
 func (site *Site) DumpConfig() {
 	site.publish("siteTitle", site.Title)
+	site.publish("boostAllowed", site.BoostAllowed)
 
 	site.log.INFO.Println("site config:")
 	site.log.INFO.Printf("  meters:    grid %s pv %s battery %s consumption %s",

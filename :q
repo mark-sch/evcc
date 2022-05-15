@@ -1,0 +1,41 @@
+[1mdiff --git a/internal/charger/keba.go b/internal/charger/keba.go[m
+[1mindex af6a75f3..14fed57b 100644[m
+[1m--- a/internal/charger/keba.go[m
+[1m+++ b/internal/charger/keba.go[m
+[36m@@ -91,12 +91,15 @@[m [mfunc NewKeba(uri, serial string, rfid RFID, timeout time.Duration) (api.Charger,[m
+ [m
+ func (c *Keba) receive(report int, resC chan<- keba.UDPMsg, errC chan<- error, closeC <-chan struct{}) {[m
+ 	t := time.NewTimer(c.timeout)[m
+[32m+[m	[32mtimeoutCounter := 0[m
+[32m+[m
+ 	defer close(resC)[m
+ 	defer close(errC)[m
+ 	for {[m
+ 		select {[m
+ 		case msg := <-c.recv:[m
+ 			// matching result message[m
+[32m+[m			[32mtimeoutCounter = 0[m
+ 			if msg.Report == nil && report == 0 {[m
+ 				resC <- msg[m
+ 				return[m
+[36m@@ -107,7 +110,10 @@[m [mfunc (c *Keba) receive(report int, resC chan<- keba.UDPMsg, errC chan<- error, c[m
+ 				return[m
+ 			}[m
+ 		case <-t.C:[m
+[31m-			errC <- errors.New("recv timeout")[m
+[32m+[m			[32mtimeoutCounter++[m
+[32m+[m			[32mif timeoutCounter >= 5 {[m
+[32m+[m				[32merrC <- errors.New("recv timeout")[m
+[32m+[m			[32m}[m
+ 			return[m
+ 		case <-closeC:[m
+ 			return[m
+[36m@@ -161,7 +167,7 @@[m [mfunc (c *Keba) roundtrip(msg string, report int, res interface{}) error {[m
+ func (c *Keba) Status() (api.ChargeStatus, error) {[m
+ 	var kr keba.Report2[m
+ 	err := c.roundtrip("report", 2, &kr)[m
+[31m-	time.Sleep(1 * time.Second)[m
+[32m+[m	[32m//time.Sleep(1 * time.Second)[m
+ [m
+ 	if err != nil {[m
+ 		return api.StatusA, err[m
