@@ -7,7 +7,7 @@
 
 EVCC is an extensible EV Charge Controller with PV integration implemented in [Go](2). It supports integration with <b>[Sunny5 Hybrid-Inverters](https://www.sunny5.de)</b> and <b>Pylontech</b> battery storage. This charge controller is Open Source, derived from andig/evcc, with enhancements and features for load management and load limitation on multiple loadpoints.
 
-This project is part of Sunny5 Smartbox, a complete hard- and software solution running locally for smarthome and wallbox management, ready to go with remote access and based on open standards.
+This project is part of <b>[Sunny5 Smartbox](https://www.sunny5.de/goto/flyer)</b>, a complete hard- and software solution running locally for smarthome and wallbox management, ready to go with remote access and based on open standards.
 
 | Sunny5 Smartbox in action with two loadpoints |
 | ------------------------ |
@@ -18,6 +18,7 @@ This project is part of Sunny5 Smartbox, a complete hard- and software solution 
 | ![Sunny5 Smartbox comes with ioBroker](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_vis.jpeg?raw=true) | ![Every Smartbox has remote access capabilities](https://github.com/mark-sch/evcc/blob/master/docs/screenshot_mobile_evcc.jpeg?raw=true) |
 
 ## What's new?
+- Added go-eCharger support for hardware v3 and api v2 with 1p3p switching
 - Added obd2evcc: This addon reads soc and range of vehicles by using elm327 obd dongles with high flying wifi chipset. Obd2evcc reads data right from the vehicle can bus, query and reconnect dongles when they are in wifi range at home and pushes all data to mqtt for use with evcc. It needs no internet or vehicle cloud api, data is updated locally every second. Obd2evcc contains a config tool for vehicle selection and comes with multiple dongle support, see readme.txt in obd2evcc folder. Grab obd2evcc standalone: 
 ```svn export https://github.com/mark-sch/evcc/trunk/obd2evcc obd2evcc```
 [See list of supported vehicles](https://github.com/mark-sch/evcc/blob/master/obd2evcc/supported_cars.js)
