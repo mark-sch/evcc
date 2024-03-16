@@ -16,8 +16,8 @@ mqtt:
 
 # influx database (v1)
 influx:
-  url: http://localhost:8086
-  database: evcc
+  #url: http://localhost:8086
+  #database: evcc
   # user:
   # password:
 
@@ -78,11 +78,10 @@ meters:
     timeout: 90s # don't use older values
 
 chargers:
-- name: keba
-  type: keba # KEBA charger
-  uri: 192.168.5.45:7090 # keba address
-  rfid:
-    tag: 12345678 # RFID tag, see on the backside of white rfid card
+- name: go-e
+  type: go-e
+  uri: http://192.168.100.120
+  api: 2
 - name: dummycharger
   type: default
   status:
@@ -117,7 +116,7 @@ site:
     pv: sunny5pv # pv meter
     battery: sunny5battery # battery meter
     consumption: sunny5consumption # consumption meter
-  prioritySoC: 25 # give home battery priority up to this soc (0 to disable)
+  prioritySoC: 40 # give home battery priority up to this soc (0 to disable)
   residualPower: 250 # household safety margin (still charge home battery while ev charging)
   maxCurrent: 16 # max. current accross all loadpoints
   # The contactors of EV batteries have a limited switch lifetime. PV charging on mixed, cloudy days 
@@ -129,7 +128,7 @@ site:
   enableContactorWellness: true
 
 loadpoints:
-- title: Ladepunkt # ui display name
+- title: Ladepunkt I # ui display name
   #vehicle: default
   mode: pv
   intervalPV: 30s
@@ -142,18 +141,18 @@ loadpoints:
       #   charging: update vehicle ONLY when charging (this is the recommended default)
       #   connected: update vehicle when connected (not only charging), interval defines how often
       #   always: always update vehicle regardless of connection state, interval defines how often
-      mode: charging
+      mode: connected
       # poll interval defines how often the vehicle API may be polled if NOT charging
-      interval: 480m
-    min: 35 # immediately charge to 35% regardless of mode unless "off" (disabled)
+      interval: 10s
+    min: 25 # immediately charge to 35% regardless of mode unless "off" (disabled)
     target: 100 # always charge to 100%
     estimate: false # set true to interpolate between api updates
     levels: # target soc levels for UI
-    - 30
-    - 50
     - 80
+    - 90
+    - 95
     - 100
-  charger: keba # charger
+  charger: go-e # charger
   onDisconnect: # set defaults when vehicle disconnects
     mode: pv # switch back to pv mode
     targetSoC: 100 # charge to 100%
@@ -162,9 +161,9 @@ loadpoints:
   #  charge: charge # charge meter
   enable: # pv mode enable behavior
     delay: 3m # threshold must be exceeded for this long
-    threshold: -1500 # minimum export power (W). If zero, export must exceeds minimum charge power to enable
+    threshold: -1600 # minimum export power (W). If zero, export must exceeds minimum charge power to enable
   disable: # pv mode disable behavior
-    delay: 3m # threshold must be exceeded for this long
+    delay: 10m # threshold must be exceeded for this long
     threshold: 200 # maximum import power (W)
   guardduration: 5m # switch charger contactor not more often than this (default 10m)
   mincurrent: 6 # minimum charge current (default 6A)

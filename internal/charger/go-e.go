@@ -27,9 +27,9 @@ type goeCloudResponse struct {
 
 // Card is part of the v2 api response identifying different users
 type Card struct {
-	Name   string `json:"name"`
-	Energy int    `json:"energy"`
-	CardID bool   `json:"cardId"`
+	Name   string  `json:"name"`
+	Energy float64 `json:"energy"`
+	CardID bool    `json:"cardId"`
 }
 
 // goeStatusResponse is the API response if status not OK

@@ -1,32 +1,47 @@
 const SubnetsPinger = require('ping-subnet');
 const subnetPinger = new SubnetsPinger();
 const arp = require('@network-utils/arp-lookup');
+const Sunny5Discovery = require('./sunny5-discovery');
+var dns = require('dns');
 const fs = require('fs');
 var foundSunny5 = false;
 var foundWB = false;
+var foundModbus = false;
 var round = 1;
 var inverterIP, wallboxIP = '';
 var arpTable;
 
 
 subnetPinger.on('host:alive', async ip => {
-  arpTable.forEach (item => {
-    if (item.ip == ip && item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd' && !foundSunny5) {
-      console.log('Found', ip, '\t', item.mac, '\t', 'Sunny5-Hybrid-Inverter');
+  arpTable.forEach (async item => {
+    if (item.ip == ip && item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd') {
+      console.log('Found', ip, '\t', item.mac, '\t', 'Luxpower-Hybrid-Inverter');
       foundSunny5 = true;
       inverterIP = ip;
+      await Sunny5Discovery.discoverInverter('lux', item.ip, item.mac);
     }
-    if (item.ip == ip && item.vendor == 'Keba GmbH' && !foundWB) {
+    if (item.ip == ip && item.vendor == 'Keba GmbH') {
       console.log('Found', ip, '\t', item.mac, '\t', 'Keba / BMW Charge Plus Wallbox');
       foundWB = true;
       wallboxIP = ip;
     }
-    if (item.ip == ip && String(item.mac).startsWith('c4:5b:be') && !foundWB) {
+    if (item.ip == ip && String(item.mac).startsWith('c4:5b:be')) {
       console.log('Found', ip, '\t', item.mac, '\t', 'go-e Charger Wallbox');
       foundWB = true;
       wallboxIP = ip;
     }
-    if (foundSunny5 && foundWB) subnetPinger.emit('ping:end');
+    if (item.ip == ip && String(item.mac).startsWith('e8:fd:f8') && item.hostname != undefined && String(item.hostname).startsWith('Eport-EE11')) {
+      console.log('Found', ip, '\t', item.mac, '\t', 'EE11 Modbus-Adapter');
+      foundModbus = true;
+      modbusIP = ip;
+    }
+    if (item.ip == ip && String(item.mac).startsWith('e8:fd:f8') && item.hostname == undefined) {
+      console.log('Found', ip, '\t', item.mac, '\t', 'Deye-Hybrid-Inverter');
+      foundSunny5 = true;
+      inverterIP = ip;
+      await Sunny5Discovery.discoverInverter('deye', item.ip, item.mac);
+    }
+    //if (foundSunny5 && foundWB) subnetPinger.emit('ping:end');
   })
 });
 
@@ -56,9 +71,11 @@ subnetPinger.on('ping:end', () => {
 
   if (round < 2 ) {
     round++
+    console.log('');
     console.log('Not all devices found. Performing second attempt...')
     discover();
   } else {
+    console.log('');
     console.log('Unable to find all devices. Check hardware and make sure that your Wallbox, Sunny5-Hybrid-Inverter and Sunny5-Smartbox device are in the same network subnet.')
     process.exit(3);
   }
@@ -116,7 +133,23 @@ async function discover() {
     if (String(item.mac).startsWith('c4:5b:be')) {
       item.vendor = 'go-e Charger';
     }
-    if (item.vendor == 'Keba GmbH' || item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd' || item.vendor == 'go-e Charger') {
+    if (String(item.mac).startsWith('84:9d:c2')) {
+      item.vendor = 'Shanghai Mxchip Information Tech Co, Ltd';
+    }
+    if (String(item.mac).startsWith('34:94:54')) {
+      item.vendor = 'Espressif Inc (Shelly)';
+    }
+    
+    if (String(item.mac).startsWith('e8:fd:f8') || String(item.mac).startsWith('34:ea:e7')) {
+      item.vendor = 'Shanghai High-Flying';
+      import('dns').then(async (dns) => {
+        try {
+            item.hostname = await dns.promises.reverse(item.ip);
+        }
+        catch(ex) {};
+      });
+    }
+    if (item.vendor == 'Keba GmbH' || item.vendor == 'Shanghai High-Flying' || item.vendor == 'Shanghai Mxchip Information Tech Co, Ltd' || item.vendor == 'go-e Charger' || item.vendor == 'Espressif Inc (Shelly)') {
       console.log('Trying to ping:', item.ip, '#', item.vendor); 
       arrPing.push(item.ip);
       count++;
@@ -124,7 +157,7 @@ async function discover() {
   });
   console.log('');
 
-  if (count > 2) {
+  if (count > 20) {
     console.log('NOTICE: Only one wallbox and inverter can be configured automatically. More units have been found, you need to configure evcc.yaml manually.');
     console.log('');
     console.log('Aborting config file builder now.');
@@ -137,7 +170,7 @@ async function discover() {
 function main() {
   console.log('');
   console.log('****************************************************');
-  console.log('*** Sunny5-Smartbox config file builder, v1.4    ***');
+  console.log('*** Sunny5-Smartbox config file builder, v1.9    ***');
   console.log('****************************************************');
   console.log('');
 

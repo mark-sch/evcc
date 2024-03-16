@@ -71,9 +71,16 @@ export default {
     },
     getVisLink: function () {
       let url =
-        document.location.origin.replace("2020", 2021).replace("sunny5", "vis.sunny5") +
-        "/vis/#EVCCMOBILE";
-      let strLink = `<a class="nav-item nav-link pb-1" href="${url}">VIS-mobile</a>`;
+        document.location.origin.replace("2020", 2020).replace("sunny5", "sunny5") +
+        "/vis/#Heatpump";
+      let strLink = `<a class="nav-item nav-link pb-1" href="${url}">Energie-Monitor</a>`;
+      return strLink;
+    },
+    getGrafanaLink: function () {
+      let url =
+        document.location.origin.replace("2020", 2020).replace("sunny5", "sunny5") +
+        "/grafana/";
+      let strLink = `<a class="nav-item nav-link pb-1" href="${url}">Energie-Chart</a>`;
       return strLink;
     },
     getLoginLink: function () {
