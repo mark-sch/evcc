@@ -106,6 +106,7 @@ type LoadPoint struct {
 	guardUpdated         time.Time // Charger enabled/disabled timestamp
 	socUpdated           time.Time // SoC updated timestamp (poll: connected)
 	hasPriority          bool
+	hasCarbatPriority    bool
 	delayStatus          string
 
 	charger     api.Charger
@@ -227,18 +228,19 @@ func NewLoadPoint(log *util.Logger) *LoadPoint {
 	bus := evbus.New()
 
 	lp := &LoadPoint{
-		log:           log,   // logger
-		clock:         clock, // mockable time
-		bus:           bus,   // event bus
-		Mode:          api.ModeOff,
-		Phases:        1,
-		status:        api.StatusNone,
-		MinCurrent:    6,  // A
-		MaxCurrent:    16, // A
-		GuardDuration: 5 * time.Minute,
-		NextPVCheck:   false,
-		hasPriority:   false,
-		delayStatus:   "",
+		log:               log,   // logger
+		clock:             clock, // mockable time
+		bus:               bus,   // event bus
+		Mode:              api.ModeOff,
+		Phases:            1,
+		status:            api.StatusNone,
+		MinCurrent:        6,  // A
+		MaxCurrent:        16, // A
+		GuardDuration:     5 * time.Minute,
+		NextPVCheck:       false,
+		hasPriority:       false,
+		hasCarbatPriority: false,
+		delayStatus:       "",
 	}
 
 	return lp
@@ -401,7 +403,8 @@ func (lp *LoadPoint) evVehicleDisconnectHandler() {
 		//lp.ForeignEV = false
 	}
 	if lp.OnDisconnect.TargetSoC != 0 {
-		_ = lp.SetTargetSoC(lp.OnDisconnect.TargetSoC)
+		//Temp: disable targetSoC reset on disconnect setting
+		//_ = lp.SetTargetSoC(lp.OnDisconnect.TargetSoC)
 	}
 
 	// soc update reset
@@ -593,11 +596,25 @@ func (lp *LoadPoint) targetSocNotReached() bool {
 // minSocNotReached checks if minimum is configured and not reached.
 // If vehicle is not configured this will always return true
 func (lp *LoadPoint) minSocNotReached() bool {
-	return lp.vehicle != nil &&
-		lp.SoC.Min > 0 &&
-		lp.socCharge != 0 &&
-		lp.socCharge != -1 &&
-		lp.socCharge < float64(lp.SoC.Min)
+	/*return lp.vehicle != nil &&
+	lp.SoC.Min > 0 &&
+	lp.socCharge != 0 &&
+	lp.socCharge != -1 &&
+	lp.socCharge < float64(lp.SoC.Min)
+	*/
+	if battery, ok := lp.site.batteryMeter.(api.Battery); ok {
+		soc, err := battery.SoC()
+		if err == nil && lp.hasCarbatPriority {
+			if lp.site.PrioritySoC < soc {
+				return true
+			} else {
+				//disable carbatPriority
+				lp.site.setCarbatPriority(lp)
+				return false
+			}
+		}
+	}
+	return false
 }
 
 // climateActive checks if vehicle has active climate request
@@ -811,6 +828,8 @@ func (lp *LoadPoint) pvMaxCurrent(mode api.ChargeMode, sitePower float64) float6
 				if mode == api.ModePV && !lp.enabled {
 					lp.log.DEBUG.Printf("pv enable timer remaining: %v", (lp.Enable.Delay - elapsed).Round(time.Second))
 					lp.delayStatus = "Einschaltverzögerung aktiv: " + fmt.Sprint((lp.Enable.Delay - elapsed).Round(time.Second))
+				} else {
+					lp.delayStatus = ""
 				}
 			}
 		}

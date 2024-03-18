@@ -413,6 +413,18 @@ func (site *Site) setLoadpointPriority(lp *LoadPoint) {
 	}
 }
 
+func (site *Site) setCarbatPriority(lp *LoadPoint) {
+	if lp.hasCarbatPriority {
+		lp.hasCarbatPriority = false
+		lp.publish("hasCarbatPriority", false)
+		return
+	} else {
+		lp.hasCarbatPriority = true
+		lp.publish("hasCarbatPriority", true)
+		return
+	}
+}
+
 func (site *Site) requestCurrentJudgement(lp *LoadPoint) {
 	//determine if any loadpoint is requesting more current than actually using
 	for _, slp := range site.loadpoints {

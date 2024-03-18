@@ -89,12 +89,19 @@ func (lp *LoadPoint) SetTargetSoC(soc int) error {
 	lp.Lock()
 	defer lp.Unlock()
 
+	// set battery prio behaviour in pv mode if prio is set twice
+	if lp.SoC.Target == soc && lp.Mode == api.ModePV {
+		lp.log.INFO.Print("set battery prio behaviour")
+		lp.site.setCarbatPriority(lp)
+	}
+
 	lp.log.INFO.Println("set target soc:", soc)
 
 	// apply immediately
 	if lp.SoC.Target != soc {
 		lp.SoC.Target = soc
 		lp.publish("targetSoC", soc)
+		lp.site.SetPrioritySoC(float64(soc))
 		lp.requestUpdate()
 	}
 

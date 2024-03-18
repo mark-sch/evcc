@@ -77,6 +77,7 @@ export default {
 		climater: String,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		hasCarbatPriority: Boolean,
 		delayStatus: String,
 		range: Number,
 	},

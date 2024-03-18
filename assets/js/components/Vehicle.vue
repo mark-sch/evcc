@@ -2,6 +2,7 @@
 	<div>
 		<div class="mb-2 pb-1">
 			{{ socTitle || "Fahrzeug" }}
+			<fa-icon class="text-primary ml-1" icon="star" v-if="carbatPriorityActive"></fa-icon>
 		</div>
 		<div class="soc-bar">
 			<div class="progress small">
@@ -51,6 +52,7 @@
 			<fa-icon v-else-if="targetChargeEnabled" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="hasDelayStatus" class="text-muted mr-1" icon="clock"></fa-icon>
 			<fa-icon v-else-if="priorityActive" class="text-muted mr-1" icon="star"></fa-icon>
+			<fa-icon v-else-if="carbatPriorityActive" class="text-muted mr-1" icon="star"></fa-icon>
 			<fa-icon
 				v-else-if="connectedButNotEnabled"
 				class="text-muted mr-1"
@@ -71,6 +73,7 @@ export default {
 		connected: Boolean,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		hasCarbatPriority: Boolean,
 		delayStatus: String,
 		socCharge: Number,
 		enabled: Boolean,
@@ -115,7 +118,8 @@ export default {
 		},
 		socMarker: function () {
 			if (this.minSoCActive) {
-				return this.minSoC;
+				//return this.minSoC;
+				return this.prioritySoC;
 			}
 			if (this.targetSoC === 100) {
 				return null;
@@ -141,10 +145,14 @@ export default {
 			return "bg-secondary";
 		},
 		minSoCActive: function () {
-			return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
+			//return this.minSoC > 0 && this.socCharge < this.minSoC && this.socCharge > 0;
+			return this.hasCarbatPriority && this.batterySoC > this.prioritySoC;
 		},
 		priorityActive: function () {
 			return this.hasPriority;
+		},
+		carbatPriorityActive: function () {
+			return this.hasCarbatPriority;
 		},
 		hasDelayStatus: function () {
 			return this.delayStatus.length !== 0;
@@ -178,7 +186,7 @@ export default {
 				return null;
 			}
 			if (this.minSoCActive) {
-				return `Mindestladung bis ${this.socMarker}%`;
+				return `Hausspeicher mitnutzen bis ${this.prioritySoC}%`;
 			}
 			if (this.hasHomeSoCPrio) {
 				return `Hausspeicher hat Vorrang bis ${this.prioritySoC}%`;
@@ -196,6 +204,9 @@ export default {
 			}
 			if (this.priorityActive) {
 				return "Bevorzugt bei Überschussladung";
+			}
+			if (this.carbatPriorityActive) {
+				return "Hausbatterie für Auto nutzen";
 			}
 			if (this.connected && !this.enabled && this.socCharge > 0) {
 				return "Verbunden";

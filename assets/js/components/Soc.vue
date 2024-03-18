@@ -1,7 +1,7 @@
 <template>
 	<div class="btn-group btn-group-toggle bg-white shadow-none">
 		<label class="btn btn-outline-primary disabled caption font-weight-bold" v-if="caption">
-			Ladeziel
+			Prio
 		</label>
 		<label
 			class="btn btn-outline-primary"

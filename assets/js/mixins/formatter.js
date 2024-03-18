@@ -73,7 +73,7 @@ export default {
       let url =
         document.location.origin.replace("2020", 2020).replace("sunny5", "sunny5") +
         "/vis/#Heatpump";
-      let strLink = `<a class="nav-item nav-link pb-1" href="${url}">Energie-Monitor</a>`;
+      let strLink = `<a class="nav-item nav-link pb-1" href="${url}">Energie-Steuerung</a>`;
       return strLink;
     },
     getGrafanaLink: function () {

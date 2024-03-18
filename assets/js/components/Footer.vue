@@ -10,7 +10,7 @@
 				<div class="col-6 text-right">
 					<small class="text-muted">
 						<a href="https://github.com/mark-sch/evcc" target="_blank"
-							>&copy; 2021 Think5 GmbH, andig/evcc et al.</a
+							>Github</a
 						>
 					</small>
 				</div>

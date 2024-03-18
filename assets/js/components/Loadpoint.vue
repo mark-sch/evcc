@@ -115,7 +115,9 @@
 				></Mode>
 			</div>
 			<div class="col-12 col-md-4 d-none d-md-block mt-3" v-if="multi && hasTargetSoC">
-				<div class="mb-2 pb-1">Ladeziel</div>
+				<div class="mb-2 pb-1">
+					Prio
+				</div>
 				<Soc
 					class="btn-group-sm"
 					:soc="targetSoC"
@@ -182,6 +184,7 @@ export default {
 		// chargeDuration: Number,
 		hasVehicle: Boolean,
 		hasPriority: Boolean,
+		hasCarbatPriority: Boolean,
 		delayStatus: String,
 		climater: String,
 		range: Number,
