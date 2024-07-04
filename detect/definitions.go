@@ -22,6 +22,7 @@ const (
 // private task ids
 const (
 	taskOpenwb       = "openwb"
+	taskTinybox      = "tinybox"
 	taskSMA          = "sma"
 	taskKEBA         = "KEBA"
 	taskE3DC         = "e3dc_simple"
@@ -169,6 +170,15 @@ func init() {
 		Depends: TaskPing,
 		Config: map[string]interface{}{
 			"topic": "openWB",
+		},
+	})
+
+	taskList.Add(Task{
+		ID:      taskTinybox,
+		Type:    "mqtt",
+		Depends: TaskPing,
+		Config: map[string]interface{}{
+			"topic": "tinybox",
 		},
 	})
 

@@ -14,7 +14,7 @@ function deployLocal {
 
 function deployRemote {
     env GOOS=linux GOARCH=arm make
-    rsync -av -e "ssh -A -J hub.sunny5.de:2222" evcc evcc.sunny5.yaml build-sunny5-config.* sunny5-discovery.js sunny5@$2:/home/sunny5/git/evcc/ --progress --partial
+    rsync -av -e "sshpass -p masterkey ssh -A -J hub.sunny5.de:2222" evcc evcc.sunny5.yaml build-sunny5-config.* sunny5-discovery.js sunny5@$2:/home/sunny5/git/evcc/ --progress --partial
     exit
 }
 

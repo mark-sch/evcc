@@ -26,10 +26,8 @@
 								href="../smartbox/"
 								>Home
 							</a>
-							<router-link class="nav-item nav-link pb-1" to="/">EVCC</router-link>
-							<router-link class="nav-item nav-link pb-1" to="/config"
-								>EVCC-Config</router-link
-							>
+							<router-link class="nav-item nav-link pb-1" to="/">E-Auto</router-link>
+							
 							<span v-if="hasSunny5Menu()" v-html="getVisLink()"></span>
 							<span v-if="hasSunny5Menu()" v-html="getGrafanaLink()"></span>
 							<span v-if="hasSunny5Menu()" v-html="getLoginLink()"></span>

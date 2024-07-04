@@ -93,7 +93,7 @@ func NewFloatGetterFromConfig(config Config) (res func() (float64, error), err e
 // NewStringGetterFromConfig creates a StringGetter from config
 func NewStringGetterFromConfig(config Config) (res func() (string, error), err error) {
 	switch typ := strings.ToLower(config.Type); typ {
-	case "combined", "openwb":
+	case "combined", "openwb", "tinybox":
 		res, err = NewOpenWBStatusProviderFromConfig(config.Other)
 
 	default:
