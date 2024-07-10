@@ -19,6 +19,7 @@ const (
 
 	// getter/setter
 	EnabledTopic    = "enabled"
+	EnableTopic     = "enable"
 	MaxCurrentTopic = "maxcurrent"
 
 	// charge power

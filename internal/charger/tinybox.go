@@ -107,11 +107,11 @@ func NewTinybox(log *util.Logger, mqttconf mqtt.Config, id int, topic string, ti
 
 	// setters
 	enable := provider.NewMqtt(log, client,
-		fmt.Sprintf("%s/set/lp%d/%s", topic, id, tinybox.EnabledTopic),
-		"", 1, timeout).BoolSetter("enable")
+		fmt.Sprintf("%s/lp/%d/%s", topic, id, tinybox.EnableTopic),
+		"", 1, timeout).BoolSetter(tinybox.EnableTopic)
 	maxcurrent := provider.NewMqtt(log, client,
-		fmt.Sprintf("%s/set/lp%d/%s", topic, id, tinybox.MaxCurrentTopic),
-		"", 1, timeout).IntSetter("maxcurrent")
+		fmt.Sprintf("%s/lp/%d/%s", topic, id, tinybox.MaxCurrentTopic),
+		"", 1, timeout).IntSetter(tinybox.MaxCurrentTopic)
 
 	// meter getters
 	currentPowerG := floatG(fmt.Sprintf("%s/lp/%d/%s", topic, id, tinybox.ChargePowerTopic))
